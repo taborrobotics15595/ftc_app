@@ -23,7 +23,8 @@ public class FirstClassTry extends LinearOpMode {
         telemetry.update();
 
 
-
+        motor1 = hardwareMap.get(DcMotor.class,"Motor1");
+        
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
