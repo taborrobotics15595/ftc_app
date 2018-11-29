@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -50,20 +51,20 @@ public class FindingGoldMinerals extends LinearOpMode {
             }
 
             while (opModeIsActive()) {
-
                 if (tfod != null) {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
-                        Recognition r = updatedRecognitions.get(0);
-                        String name = r.getLabel();
-                        float height = r.getHeight();
-                        float confidence = r.getConfidence();
-                        float left = r.getLeft();
-                        float right = r.getRight();
-                        String info = "Name: " + name + "Height: " + height + "Confidence: " + confidence + "L: " + left + "R: " + right;
-                        telemetry.addData("Info:",info);
+                        if (updatedRecognitions.size() > 0) {
+                            Recognition r = findGoldMineral(updatedRecognitions);
+                            String name = r.getLabel();
+                            float left = r.getLeft();
+                            float right = r.getRight();
+                            double angle = r.estimateAngleToObject(AngleUnit.DEGREES);
+                            String info = "Name: " + name +  " L: " + left + " R: " + right + " Angle: " + angle;
+                            telemetry.addData("Info:", info);
+                        }
                     }
                 }
 
@@ -104,5 +105,19 @@ public class FindingGoldMinerals extends LinearOpMode {
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
+    }
+
+    private Recognition findGoldMineral(List<Recognition> recognitions){
+        double c = 0.0;
+        Recognition bestR = null;
+        for(Recognition r:recognitions){
+            double current = r.getConfidence();
+            String name = r.getLabel();
+            if ((current > c) && (name == LABEL_GOLD_MINERAL)) {
+                c = current;
+                bestR = r;
+            }
+        }
+        return bestR;
     }
 }

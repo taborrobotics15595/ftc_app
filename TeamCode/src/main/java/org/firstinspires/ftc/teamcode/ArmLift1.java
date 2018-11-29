@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.Range;
 public class ArmLift1 extends LinearOpMode {
 
     DcMotor motor1;
-    int encoderValue;
+
 
 
     @Override
@@ -26,8 +26,8 @@ public class ArmLift1 extends LinearOpMode {
         while(opModeIsActive()) {
             double y = Range.clip(gamepad1.left_stick_y, -0.5, 0.5);
             motor1.setPower(y);
-            double encoder = motor1.getCurrentPosition();
-            telemetry.addData("Encoder Value:",Double.toString(encoder));
+            int encoder = motor1.getCurrentPosition();
+            telemetry.addData("Encoder Value:",Integer.toString(encoder));
             telemetry.update();
         }
 
