@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
@@ -26,6 +27,12 @@ public class MecanumDriveTrain  {
         }
     }
 
+    public void runWithEncoders(){
+        for(DcMotor motor:motors){
+            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+    }
     public void setPower(double power){
         for (DcMotor motor:motors){
             motor.setPower(power);
@@ -33,29 +40,43 @@ public class MecanumDriveTrain  {
     }
 
     public void setPower(double powerR,double powerL){
-        for(int index:right){
-            motors.get(index).setPower(powerR);
-        }
-        for(int index:left){
-            motors.get(index).setPower(powerL);
+        powerTOGroup(right,powerR);
+        powerTOGroup(left,powerL);
+    }
+
+    public void setPower(double ... powers){
+        for(int index = 0;index < powers.length; index++){
+            motors.get(index).setPower(powers[index]);
         }
     }
 
     public void rotate(double power){
-        for (int index:right){
-            motors.get(index).setPower(power);
-        }
-        for(int index:left){
-            motors.get(index).setPower(-power);
-        }
+        powerTOGroup(right,power);
+        powerTOGroup(left,power);
+
     }
 
     public void slide(double power){
-        for(int index:front){
-            motors.get(index).setPower(-power);
+        powerTOGroup(front,-power);
+        powerTOGroup(back,power);
+
+    }
+
+    public int[] encoderValues(){
+        int[] values = {};
+        for(int index = 0; index < motors.size(); index++){
+            DcMotor motor = motors.get(index);
+            int position = motor.getCurrentPosition();
+            values[index] = position;
         }
-        for(int index:back){
+
+        return values;
+    }
+
+    private void powerTOGroup(int[] group,double power){
+        for(int index:group){
             motors.get(index).setPower(power);
         }
     }
+
 }

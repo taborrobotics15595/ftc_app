@@ -28,8 +28,8 @@ public class MecanumTeleOp extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()){
-            double powerR = Range.clip(gamepad1.left_stick_y-gamepad1.left_stick_x,-maxPower,maxPower);
-            double powerL = Range.clip(gamepad1.left_stick_y+ gamepad1.left_stick_x,-maxPower,maxPower);
+            double powerR = Range.clip(gamepad1.left_stick_y+gamepad1.left_stick_x,-maxPower,maxPower);
+            double powerL = Range.clip(gamepad1.left_stick_y-gamepad1.left_stick_x,-maxPower,maxPower);
 
             double slide = Range.clip(gamepad1.right_stick_x,-maxPower,maxPower);
 
@@ -40,13 +40,40 @@ public class MecanumTeleOp extends LinearOpMode {
                 robot.setPower(powerR,powerL);
             }
 
-            String messge = "Right Power: " + Double.toString(powerR) + "Left Power: " + Double.toString(powerL) + "Slide: " + Double.toString(slide);
-            telemetry.addData("Info:",messge);
+            int[] values = robot.encoderValues();
+
+            ArrayList<Double> error = calculateError(values);
+
+            String encoderValuesString = "";
+            for (int value:values){
+                encoderValuesString += "Value: " + Integer.toString(value);
+            }
+
+            String message = "Right Power: " + Double.toString(powerR) + "Left Power: " + Double.toString(powerL) + "Slide: " + Double.toString(slide);
+            message = encoderValuesString;
+            telemetry.addData("Info:",message);
             telemetry.update();
 
             conditional = gamepad1.right_bumper?1:0;
             maxPower = maxPower1 + conditional*0.2;
 
         }
+    }
+
+    public ArrayList<Double> calculateError(int[] encoderValues){
+        ArrayList<Double> error = new ArrayList<Double>();
+
+        double averageValue = 0;
+        for (int current:encoderValues){
+            averageValue += current;
+        }
+        averageValue /= encoderValues.length;
+
+        for (int current:encoderValues){
+            double diff = (current - averageValue)/averageValue;
+            error.add(diff);
+        }
+
+        return error;
     }
 }
