@@ -9,11 +9,9 @@ import com.qualcomm.robotcore.util.Range;
 public class ExhibitionBot extends LinearOpMode {
 
     //TankDrive drive = new TankDrive(hardwareMap,"Motor1","Motor2","Motor3","Motor4");
-    WiffleLauncher launcher = new WiffleLauncher(hardwareMap,"Shooter1","Shooter2");
+    WiffleLauncher launcher;
 
     double maxPower = 0.7;
-    double[] launchPowers = {0.2,0.5,0.7,0.9};
-    int currentIndex = 0;
 
     double maxLaunch1 = 0.7;
     double maxLaunch2 = 0.9;
@@ -21,9 +19,11 @@ public class ExhibitionBot extends LinearOpMode {
     boolean increasing = false;
 
 
+
     @Override
     public void runOpMode(){
 
+        launcher = new WiffleLauncher(hardwareMap,"Motor1","Motor2","Motor3");
         waitForStart();
         while(opModeIsActive()){
             double rightPower = Range.clip(gamepad1.left_stick_y+gamepad1.left_stick_x,-maxPower,maxPower);
@@ -39,9 +39,19 @@ public class ExhibitionBot extends LinearOpMode {
                 increasing = !increasing;
             }
 
+            if(gamepad1.y){
+                launcher.setup();
+            }
+
             if (increasing){
                 launcher.gradualChange(currentMax);
             }
+
+
+
+
+
+
 
         }
     }
