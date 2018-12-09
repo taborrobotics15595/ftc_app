@@ -9,16 +9,20 @@ import java.util.List;
 
 @Autonomous
 public class AutonomousModeCorner1 extends LinearOpMode {
-    //MecanumDriveTrain robot = new MecanumDriveTrain(hardwareMap,"Motor1","Motor2","Motor3","Motor4");
-
+    MecanumDriveTrain robot;
+    MineralFinder finder;
+    Mechanisms mechs;
 
     String pos;
     double angle;
     @Override
     public void runOpMode(){
-        //robot.runWithEncoders();
+        robot = new MecanumDriveTrain(hardwareMap,"Motor1","Motor2","Motor3","Motor4");
+        robot.runWithEncoders();
 
-        MineralFinder finder = new MineralFinder(hardwareMap);
+        mechs = new Mechanisms(hardwareMap,"LiftMotor","GrabberName","TurnName","BucketServo","GrabberServo");
+
+        finder = new MineralFinder(hardwareMap);
         finder.activate();
         waitForStart();
 

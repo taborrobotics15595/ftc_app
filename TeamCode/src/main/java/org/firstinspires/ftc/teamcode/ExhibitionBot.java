@@ -32,11 +32,17 @@ public class ExhibitionBot extends LinearOpMode {
 
             if (gamepad1.a){
                 currentMax = maxLaunch1;
-                increasing = !increasing;
+                increasing = true;
             }
             if(gamepad1.x){
                 currentMax = maxLaunch2;
-                increasing = !increasing;
+                increasing = true;
+            }
+
+            if(gamepad1.b){
+                increasing = false;
+                launcher.stop();
+
             }
 
             if(gamepad1.y){
@@ -46,6 +52,7 @@ public class ExhibitionBot extends LinearOpMode {
             if (increasing){
                 launcher.gradualChange(currentMax);
             }
+
 
 
 

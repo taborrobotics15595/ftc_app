@@ -22,6 +22,7 @@ public class WiffleLauncher {
 
         m2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         m2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        m2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         m3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         m3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -35,6 +36,7 @@ public class WiffleLauncher {
 
     public void setup(){
         m3.setTargetPosition(120);
+        m3.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         while(m3.isBusy()){
             m3.setPower(0.1);
         }
@@ -55,5 +57,10 @@ public class WiffleLauncher {
             currentPower2 += increase;
             m2.setPower(currentPower2);
         }
+    }
+
+    public void stop(){
+        m1.setPower(0);
+        m2.setPower(0);
     }
 }

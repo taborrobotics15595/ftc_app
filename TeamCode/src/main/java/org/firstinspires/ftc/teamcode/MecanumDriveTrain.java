@@ -62,16 +62,7 @@ public class MecanumDriveTrain  {
 
     }
 
-    public int[] encoderValues(){
-        int[] values = {};
-        for(int index = 0; index < motors.size(); index++){
-            DcMotor motor = motors.get(index);
-            int position = motor.getCurrentPosition();
-            values[index] = position;
-        }
 
-        return values;
-    }
 
     private void powerTOGroup(int[] group,double power){
         for(int index:group){

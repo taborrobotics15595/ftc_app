@@ -3,21 +3,29 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Mechanisms {
-    public DcMotor liftArmMotor,grabberArmMotor;
+    public static DcMotor liftArmMotor,grabberArmMotor,turnMotor;
     public Servo bucket;
     public CRServo grabber;
 
-    public int liftMaxPosition = 180;
-    public int liftMinPosition = 0;
-    public double liftPower = 0.5;
+    public static  int liftMaxPosition = 500;
+    public static int liftMinPosition = 0;
+    public static double liftPower = 0.5;
+    public static boolean liftExtended = false;
 
-    public int grabberMaxPosition = 300;
-    public int grabberMinPosition = 0;
-    public double grabberPower = 0.5;
+    public static int grabberMaxPosition = 1500;
+    public static int grabberMinPosition = 0;
+    public static double grabberPower = 0.5;
+    public static boolean grabberExtended = false;
+
+    public static int turnMotorMax = 100;
+    public static int turnMotorMin = 0;
+    public static double turnPower = 0.5;
+    public static boolean turnExtended = false;
 
     public double bucketMaxPos = 1;
     public double bucketMinPos = 0;
@@ -28,27 +36,38 @@ public class Mechanisms {
 
 
 
-    public Mechanisms(HardwareMap hardwareMap,String liftName,String grabberName,String bucketServoName,String grabberServoName){
+    public Mechanisms(HardwareMap hardwareMap,String liftName,String grabberName,String turnName,String bucketServoName,String grabberServoName){
         liftArmMotor = hardwareMap.get(DcMotor.class,liftName);
         grabberArmMotor = hardwareMap.get(DcMotor.class,grabberName);
+        turnMotor = hardwareMap.get(DcMotor.class,turnName);
         bucket = hardwareMap.get(Servo.class,bucketServoName);
         grabber = hardwareMap.get(CRServo.class,grabberServoName);
 
         liftArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftArmMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        turnMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turnMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        turnMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         grabberArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         grabberArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        grabberArmMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        grabberArmMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
-    public void lift(DcMotor m,int maxPos,double power){
+    public void lift(DcMotor m, int maxPos, double power){
         m.setTargetPosition(maxPos);
         m.setPower(power);
+        m.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
-    public void drop(DcMotor m,int maxPos,double power){
-        m.setTargetPosition(maxPos);
-        m.setPower(-power);
+    public void drop(DcMotor m,int minPos, double power){
+        m.setTargetPosition(minPos);
+        m.setPower(power);
+        m.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void stopLift(DcMotor m){
@@ -80,5 +99,26 @@ public class Mechanisms {
     public void stopSpinning(){
         grabber.setPower(0);
     }
+
+    enum MotorConstants{
+        LIFT(Mechanisms.liftArmMotor,Mechanisms.liftMaxPosition,Mechanisms.liftMinPosition,Mechanisms.liftPower,Mechanisms.liftExtended),
+        GRAB(Mechanisms.grabberArmMotor,Mechanisms.grabberMaxPosition,Mechanisms.grabberMinPosition,Mechanisms.grabberPower,Mechanisms.grabberExtended),
+        TURN(Mechanisms.turnMotor,Mechanisms.turnMotorMax,Mechanisms.turnMotorMin,Mechanisms.turnPower,Mechanisms.turnExtended);
+
+        public DcMotor motor;
+        public int max;
+        public int min;
+        public double power;
+        public boolean extended;
+        MotorConstants(DcMotor motor, int max, int min,double power,boolean extended){
+            this.motor = motor;
+            this.max = max;
+            this.min = min;
+            this.power = power;
+            this.extended = extended;
+        }
+    }
+
+
 
 }
