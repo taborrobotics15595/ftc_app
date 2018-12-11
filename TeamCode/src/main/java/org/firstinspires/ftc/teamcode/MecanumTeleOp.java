@@ -24,7 +24,8 @@ public class MecanumTeleOp extends LinearOpMode {
     @Override
     public void runOpMode(){
 
-        robot = new MecanumDriveTrain(hardwareMap,"Motor1","Motor2","Motor3","Motor4");;
+        robot = new MecanumDriveTrain(hardwareMap,"Motor1","Motor2","Motor3","Motor4");
+        robot.runWithEncoders();
         waitForStart();
 
         while(opModeIsActive()){

@@ -49,6 +49,16 @@ public class MineralFinder {
         return recognitions;
     }
 
+    public boolean foundGold(List<Recognition> recognitions){
+        boolean found = false;
+        for(Recognition r:recognitions){
+            if (r.getLabel() == LABEL_GOLD_MINERAL){
+                found = true;
+            }
+        }
+        return found;
+    }
+
     public String getGoldPosition(List<Recognition> recognitions){
         String pos = "";
         if (recognitions.size() == 3){

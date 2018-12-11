@@ -14,15 +14,15 @@ public class OmniFlynn extends LinearOpMode {
 
     String names[] = {"Motor1","Motor2","Motor3","Motor4"};
 
-    int[] front = {0,1};
-    int[] back = {2,3};
-    int[] left = {0,2};
-    int[] right = {1,3};
+    double[] forward = {1,-1,1,-1};
+    double[] right = {1,1,-1,-1};
+    double[] turn = {1,1,1,1};
 
-    double maxPower = 0.5;
 
-    int[] currentPositions = {0,0,0,0};
-    int[] targetPositions = {0,0,0,0};
+    double maxPower = 0.3;
+
+    int[] currentPositions;
+    int[] targetPositions;
 
     double returnPower = 0.5;
 
@@ -37,19 +37,25 @@ public class OmniFlynn extends LinearOpMode {
 
         }
 
+        currentPositions = getCurrentPositions();
+        targetPositions = currentPositions;
+
         waitForStart();
         while(opModeIsActive()){
-            double rightP = Range.clip(gamepad1.left_stick_y + gamepad1.left_stick_x,-maxPower,maxPower);
-            double leftP = Range.clip(gamepad1.left_stick_y - gamepad1.left_stick_x,-maxPower,maxPower);
+            double yPower = Range.clip(gamepad1.left_stick_y,-maxPower,maxPower);
+            double xPower = Range.clip(gamepad1.left_stick_x,-maxPower,maxPower);
 
-            double slide = Range.clip(gamepad1.right_stick_x,-maxPower,maxPower);
+            double rotate = Range.clip(gamepad1.right_stick_x,-maxPower,maxPower);
 
-            if (slide != 0){
-                actionToGroup(front,slide);
-                actionToGroup(back,-slide);
-            }else{
-                actionToGroup(right,rightP);
-                actionToGroup(left,-leftP);
+            if (rotate != 0){
+                applyPower(turn,rotate);
+            }
+            else{
+                double[] f = multiplyLists(forward,yPower);
+                double[] r = multiplyLists(right,xPower);
+                double[] powers = addLists(f,r);
+                applyPower(powers,1);
+
             }
 
             currentPositions = getCurrentPositions();
@@ -66,14 +72,38 @@ public class OmniFlynn extends LinearOpMode {
         }
     }
 
-    public void actionToGroup(int[] group,double power){
-        for(int index:group){
-            motors.get(index).setPower(power);
+    public  void applyPower(double[] config,double power){
+        for(int index = 0;index < motors.size();index++){
+            double p = config[index] * power;
+            motors.get(index).setPower(p);
         }
     }
 
+    public double[] addLists(double[] ... lists){
+        double[] sum =new double[lists[0].length];
+        for(int i=0;i<lists[0].length;i++){
+            double s = 0;
+            for (double[] list:lists){
+                s += list[i];
+            }
+            sum[i] = s;
+        }
+        return sum;
+    }
+
+    public double[] multiplyLists(double[] list, double power){
+        double[] sum = new double[list.length];
+        for(int i = 0;i<list.length;i++){
+            double p = list[i]*power;
+            sum[i] = p;
+        }
+        return sum;
+    }
+
+
+
     public int[] getCurrentPositions(){
-        int[] positions = currentPositions;
+        int[] positions = new int[motors.size()];
         for(int i = 0;i<motors.size();i++){
             int p = motors.get(i).getCurrentPosition();
             positions[i] = p;
@@ -89,8 +119,9 @@ public class OmniFlynn extends LinearOpMode {
             motor.setTargetPosition(targetPosition);
         }
 
-        boolean keep  = true;
-        while (keep) {
+        int motorsBusy  = 4;
+        while (motorsBusy > 0) {
+            motorsBusy = 0;
             for (int i = 0; i < motors.size(); i++) {
                 DcMotor motor = motors.get(i);
                 boolean busy = motor.isBusy();
@@ -101,10 +132,11 @@ public class OmniFlynn extends LinearOpMode {
                     motor.setPower(0);
                     motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 }
-                keep = keep && busy;
+                motorsBusy = (busy)?(motorsBusy + 1):motorsBusy;
             }
             telemetry.addData("Status:","in loop");
             telemetry.update();
+
         }
 
 

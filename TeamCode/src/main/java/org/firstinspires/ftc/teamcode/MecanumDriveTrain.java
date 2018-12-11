@@ -19,6 +19,7 @@ public class MecanumDriveTrain  {
     public  MecanumDriveTrain(HardwareMap hardwareMap,String ... motorNames){
         for (int i = 0;i<motorNames.length;i++){
             DcMotor currentMotor = hardwareMap.get(DcMotor.class,motorNames[i]);
+            currentMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             motors.add(currentMotor);
         }
 
