@@ -66,7 +66,12 @@ public class OmniFlynn extends LinearOpMode {
                 moveToPositions();
             }
 
-            String message = "Current: " + Integer.toString(currentPositions[0]) + " Target: " + Integer.toString(targetPositions[0]);
+            String message = "";
+            for(int index = 0;index < motors.size();index ++){
+                int current = currentPositions[index];
+                int target = targetPositions[index];
+                message += " Current: " + Integer.toString(current) + "Target: " + Integer.toString(target);
+            }
             telemetry.addData("Status:",message);
             telemetry.update();
         }

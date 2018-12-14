@@ -18,6 +18,7 @@ public class MechanismsTeleOp extends LinearOpMode {
         mechs = new Mechanisms(hardwareMap,"LiftMotor","GrabberMotor","TurnMotor","BucketServo","GrabberServo");
 
         waitForStart();
+
         while(opModeIsActive()){
             moveMotor(gamepad1.a,Mechanisms.MotorConstants.LIFT);
             moveMotor(gamepad1.x,Mechanisms.MotorConstants.GRAB);
@@ -32,6 +33,15 @@ public class MechanismsTeleOp extends LinearOpMode {
                     mechs.closeBucket();
                 }
                 bucketOpened = !bucketOpened;
+            }
+
+            if(gamepad1.right_bumper){
+                if(mechs.isSpinning){
+                    mechs.stopSpinning();
+                }
+                else{
+                    mechs.startSpinning();
+                }
             }
 
         }

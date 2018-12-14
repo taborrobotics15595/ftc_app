@@ -28,11 +28,12 @@ public class Mechanisms {
     public static boolean turnExtended = false;
 
     public double bucketMaxPos = 1;
-    public double bucketMinPos = 0;
-    public double currentPos = bucketMinPos;
+    public double bucketMinPos = 0.5;
+    public double currentPos = bucketMaxPos;
     public double interval = 0.1;
 
     public double spinningPower = 1;
+    public boolean isSpinning = false;
 
 
 
@@ -56,6 +57,8 @@ public class Mechanisms {
         grabberArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         grabberArmMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         grabberArmMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
     }
 
     public void lift(DcMotor m, int maxPos, double power){
@@ -94,9 +97,11 @@ public class Mechanisms {
 
     public void startSpinning(){
         grabber.setPower(spinningPower);
+        isSpinning = true;
     }
 
     public void stopSpinning(){
+        isSpinning = false;
         grabber.setPower(0);
     }
 

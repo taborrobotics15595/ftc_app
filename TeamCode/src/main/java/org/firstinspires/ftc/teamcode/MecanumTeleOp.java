@@ -41,11 +41,6 @@ public class MecanumTeleOp extends LinearOpMode {
                 robot.setPower(powerR,powerL);
             }
 
-
-            String message = "Right Power: " + Double.toString(powerR) + "Left Power: " + Double.toString(powerL) + "Slide: " + Double.toString(slide);
-            telemetry.addData("Info:",message);
-            telemetry.update();
-
             conditional = gamepad1.right_bumper?1:0;
             maxPower = maxPower1 + conditional*0.2;
 
