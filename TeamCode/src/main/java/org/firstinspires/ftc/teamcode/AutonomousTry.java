@@ -20,28 +20,18 @@ public class AutonomousTry extends LinearOpMode {
 
     String names[] = {"Motor1","Motor2","Motor3","Motor4"};
 
-    double[] forward = {1,-1,1,-1};
-    double[] right = {1,1,-1,-1};
-    double[] turn = {1,1,1,1};
 
-
-    double maxPower = 0.5;
-    double slidePower = 0.3;
-
-    double[] powerToApply;
-    double power;
-    double returnPower = 0.4;
+    double returnPower = 0.3;
 
     boolean hasTurned = false;
     boolean hasFound = false;
 
-    int[] currentPositions;
 
     int[] start = {580,-580,580,-580};
     int[] slideRight = {570,570,-570,-570};
     int[] slideLeft = {-600,-600,600,600};
 
-
+    String pos = "center";
 
 
 
@@ -63,66 +53,62 @@ public class AutonomousTry extends LinearOpMode {
         waitForStart();
 
         moveToPositions(start);
+        resetEncoders();
+
+        while(opModeIsActive()){
+            List<Recognition> r = finder.getRecognitions();
+            if(!hasFound) {
+                if (finder.foundGold(r)) {
+                    hasFound = true;
+                } else {
+                    ArrayList<Float> rights = new ArrayList<>();
+                    for (Recognition recognition : r) {
+                        float right = recognition.getRight();
+                        rights.add(right);
+                    }
+                    if (rights.size() == 1) {
+                        if (hasTurned) {
+                            moveToPositions(slideRight);
+                            pos = "right";
+                        } else {
+                            moveToPositions(slideLeft);
+                            pos = "left";
+                        }
+                        hasTurned = !hasTurned;
+                    } else {
+                        boolean left = false;
+                        for (float rV : rights) {
+                            if (rV < 800) {
+                                left = true;
+                            }
+                        }
+                        int[] tPos = (left) ? slideLeft : slideRight;
+                        pos = (left) ? "left" : "right";
+                        moveToPositions(tPos);
+                    }
+                }
+            }
+            else{
+                resetEncoders();
+                moveToPositions(start);
+
+                telemetry.addData("Position",pos);
+                telemetry.update();
+                break;
+            }
+
+
+
+
+        }
+
+    }
+
+    public void resetEncoders(){
         for(DcMotor motor:motors){
             motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
-        while(opModeIsActive()){
-            String message = "";
-            List<Recognition> r = finder.getRecognitions();
-            double angle = finder.getGoldAngle(r);
-
-
-            if (finder.foundGold(r)){
-                message += "found" + Double.toString(angle);
-                if (power == 0){
-                    for(DcMotor motor:motors){
-                        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    }
-                    //moveToPositions(start);
-                    telemetry.addData("Statys",message);
-                    break;
-                }
-                hasFound = true;
-            }
-            else if(!hasFound){
-                ArrayList<Float> rights = new ArrayList<>();
-                for(Recognition recognition:r){
-                    float right = recognition.getRight();
-                    rights.add(right);
-                }
-                if (rights.size() == 1){
-                    if(hasTurned){
-                        moveToPositions(slideRight);
-                        message += "turn right try";
-                    }
-                    else{
-                        moveToPositions(slideLeft);
-                        message += "turn left try";
-                    }
-                    hasTurned = !hasTurned;
-                }
-                else{
-                    boolean left = false;
-                    for(float rV:rights){
-                        if (rV< 800){
-                            left = true;
-                        }
-                    }
-                    message += "knowns pos rotate" + Boolean.toString(left);
-                    int[] tPos = (left)?slideLeft:slideRight;
-                    moveToPositions(tPos);
-                }
-            }
-
-            telemetry.addData("status",message);
-            telemetry.update();
-            sleep(1000);
-
-
-
-        }
-
     }
 
     public  void applyPower(double[] config,double power){

@@ -2,17 +2,13 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
-
-import org.firstinspires.ftc.teamcode.MecanumDriveTrain;
-
-import java.util.ArrayList;
 
 @TeleOp
 public class MecanumTeleOp extends LinearOpMode {
 
     private double maxPower1 = 0.5;
-    private double maxPower2 = 0.7;
 
     private int conditional = 1;
 
@@ -25,20 +21,22 @@ public class MecanumTeleOp extends LinearOpMode {
     public void runOpMode(){
 
         robot = new MecanumDriveTrain(hardwareMap,"Motor1","Motor2","Motor3","Motor4");
-        robot.runWithEncoders();
+        robot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         waitForStart();
 
         while(opModeIsActive()){
-            double powerR = Range.clip(gamepad1.left_stick_y+gamepad1.left_stick_x,-maxPower,maxPower);
-            double powerL = Range.clip(gamepad1.left_stick_y-gamepad1.left_stick_x,-maxPower,maxPower);
+            double powerY = Range.clip(gamepad1.left_stick_y,-maxPower,maxPower);
+            double powerX = Range.clip(gamepad1.left_stick_x,-maxPower,maxPower);
 
-            double slide = Range.clip(gamepad1.right_stick_x,-maxPower,maxPower);
+            double turn = Range.clip(gamepad1.right_stick_x,-maxPower,maxPower);
 
-            if (slide != 0){
-                robot.slide(slide);
+            if (turn != 0){
+                robot.turn(turn);
             }
             else{
-                robot.setPower(powerR,powerL);
+                robot.setPower(powerY,powerX);
             }
 
             conditional = gamepad1.right_bumper?1:0;

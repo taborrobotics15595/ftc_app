@@ -1,76 +1,87 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
-public class MecanumDriveTrain  {
+public class MecanumDriveTrain {
 
     ArrayList<DcMotor> motors = new ArrayList<DcMotor>();
-    int[] right = {1,3};
-    int[] left = {0,2};
-    int[] front = {0,1};
-    int[] back = {2,3};
+
+    double[] forward = {1,-1,1,-1};
+    double[] right = {-1,-1,1,1};
+
+    double[] turn = {1,1,1,1};
 
 
 
-    public  MecanumDriveTrain(HardwareMap hardwareMap,String ... motorNames){
+    public MecanumDriveTrain(HardwareMap hardwareMap, String ... motorNames){
         for (int i = 0;i<motorNames.length;i++){
             DcMotor currentMotor = hardwareMap.get(DcMotor.class,motorNames[i]);
             currentMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             motors.add(currentMotor);
         }
 
-        for(int index:right){
-            motors.get(index).setDirection(DcMotorSimple.Direction.REVERSE);
+
+    }
+
+    public void setMode(DcMotor.RunMode mode){
+        for(DcMotor motor: motors){
+            motor.setMode(mode);
         }
     }
 
-    public void runWithEncoders(){
+    public void setZeroPowerBehaviour(DcMotor.ZeroPowerBehavior behaviour){
         for(DcMotor motor:motors){
-            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
-    }
-    public void setPower(double power){
-        for (DcMotor motor:motors){
-            motor.setPower(power);
+            motor.setZeroPowerBehavior(behaviour);
         }
     }
 
-    public void setPower(double powerR,double powerL){
-        powerTOGroup(right,powerR);
-        powerTOGroup(left,powerL);
+    public void turn(double power){
+        double[] outputPower = multiplyLists(turn,power);
+        applyPower(outputPower);
+    }
+    public void setPower(double powerY,double powerX){
+        double[] powersForward = multiplyLists(forward,powerY);
+        double[] powersRight = multiplyLists(right,powerX);
+        double[] outputPower = addLists(powersForward,powersRight);
+        applyPower(outputPower);
+
     }
 
-    public void setPower(double ... powers){
-        for(int index = 0;index < powers.length; index++){
-            motors.get(index).setPower(powers[index]);
+    private void applyPower(double[] power){
+        for(int index = 0;index<motors.size();index++){
+            motors.get(index).setPower(power[index]);
         }
     }
 
-    public void rotate(double power){
-        powerTOGroup(right,power);
-        powerTOGroup(left,power);
-
-    }
-
-    public void slide(double power){
-        powerTOGroup(front,-power);
-        powerTOGroup(back,power);
-
-    }
-
-
-
-    private void powerTOGroup(int[] group,double power){
-        for(int index:group){
-            motors.get(index).setPower(power);
+    private double[] addLists(double[] ... lists){
+        double[] sum =new double[lists[0].length];
+        for(int i=0;i<lists[0].length;i++){
+            double s = 0;
+            for (double[] list:lists){
+                s -= list[i];
+            }
+            sum[i] = s;
         }
+        return sum;
     }
+
+    private double[] multiplyLists(double[] list, double power){
+        double[] sum = new double[list.length];
+        for(int i = 0;i<list.length;i++){
+            double p = list[i]*power;
+            sum[i] = p;
+        }
+        return sum;
+    }
+
+
+
+
+
+
 
 }
