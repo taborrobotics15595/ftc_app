@@ -8,10 +8,7 @@ import com.qualcomm.robotcore.util.Range;
 @TeleOp
 public class ExhibitionBot extends LinearOpMode {
 
-    //TankDrive drive = new TankDrive(hardwareMap,"Motor1","Motor2","Motor3","Motor4");
     WiffleLauncher launcher;
-
-    double maxPower = 0.7;
 
     double maxLaunch1 = 0.7;
     double maxLaunch2 = 0.9;
@@ -26,9 +23,6 @@ public class ExhibitionBot extends LinearOpMode {
         launcher = new WiffleLauncher(hardwareMap,"Motor1","Motor2","Motor3");
         waitForStart();
         while(opModeIsActive()){
-            double rightPower = Range.clip(gamepad1.left_stick_y+gamepad1.left_stick_x,-maxPower,maxPower);
-            double leftPower  = Range.clip(gamepad1.left_stick_y-gamepad1.left_stick_x,-maxPower,maxPower);
-
 
             if (gamepad1.a){
                 currentMax = maxLaunch1;
@@ -49,16 +43,9 @@ public class ExhibitionBot extends LinearOpMode {
                 launcher.setup();
             }
 
-            if (increasing){
+            if(increasing){
                 launcher.gradualChange(currentMax);
             }
-
-
-
-
-
-
-
 
         }
     }

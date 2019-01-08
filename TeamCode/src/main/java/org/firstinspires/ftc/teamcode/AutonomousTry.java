@@ -23,16 +23,21 @@ public class AutonomousTry extends LinearOpMode {
 
     double returnPower = 0.3;
 
-    boolean hasTurned = false;
+    int wiggle = 0;
     boolean hasFound = false;
 
 
     int[] start = {580,-580,580,-580};
     int[] slideRight = {570,570,-570,-570};
+    int[] middle = {0,0,0,0};
     int[] slideLeft = {-600,-600,600,600};
+    int[] park = {200,-200,200,-200};
 
-    String pos = "center";
+    int[][] positions = {slideLeft,middle,slideRight};
 
+    int f = 50;
+
+    int index = 1;
 
 
     @Override
@@ -57,45 +62,37 @@ public class AutonomousTry extends LinearOpMode {
 
         while(opModeIsActive()){
             List<Recognition> r = finder.getRecognitions();
+            String message = "";
             if(!hasFound) {
                 if (finder.foundGold(r)) {
                     hasFound = true;
+                    message = "found";
                 } else {
-                    ArrayList<Float> rights = new ArrayList<>();
-                    for (Recognition recognition : r) {
-                        float right = recognition.getRight();
-                        rights.add(right);
-                    }
-                    if (rights.size() == 1) {
-                        if (hasTurned) {
-                            moveToPositions(slideRight);
-                            pos = "right";
-                        } else {
-                            moveToPositions(slideLeft);
-                            pos = "left";
-                        }
-                        hasTurned = !hasTurned;
-                    } else {
-                        boolean left = false;
-                        for (float rV : rights) {
-                            if (rV < 800) {
-                                left = true;
-                            }
-                        }
-                        int[] tPos = (left) ? slideLeft : slideRight;
-                        pos = (left) ? "left" : "right";
+                    if (wiggle != 2) {
+                        int[] tPos = wiggle(f - wiggle * 2*f);
                         moveToPositions(tPos);
+                        wiggle += 1;
+                        message = "wiggle" + Integer.toString(wiggle);
+                    }
+                    else{
+                        wiggle = 0;
+                        int[] p = positions[index];
+                        moveToPositions(p);
+                        index  = (index + 1)%positions.length;
+                        message = "turning" + Integer.toString(index);
+
                     }
                 }
             }
             else{
                 resetEncoders();
                 moveToPositions(start);
-
-                telemetry.addData("Position",pos);
-                telemetry.update();
+                resetEncoders();
+                moveToPositions(park);
                 break;
             }
+            telemetry.addData("Stats:",message);
+            telemetry.update();
 
 
 
@@ -116,6 +113,24 @@ public class AutonomousTry extends LinearOpMode {
             double p = config[index] * power;
             motors.get(index).setPower(p);
         }
+    }
+
+    public int[] wiggle(int f){
+        int[] n = getCurrentPositions();
+        for(int i = 0;i<n.length;i++){
+            n[i] += (f*slideRight[i]/Math.abs(slideRight[i]));
+
+        }
+        return n;
+    }
+
+    public int[] getCurrentPositions(){
+        int n[]= new int[motors.size()];
+        for(int i = 0;i<motors.size();i++){
+            DcMotor m = motors.get(i);
+            n[i] = m.getCurrentPosition();
+        }
+        return n;
     }
 
     public void moveToPositions(int[] target) {

@@ -12,7 +12,8 @@ public class OmniFlynn extends LinearOpMode {
 
     HolonomicDriveTrain robot;
 
-    double maxPower = 0.5;
+    double maxPower = 0.3;
+
 
 
 
@@ -27,11 +28,13 @@ public class OmniFlynn extends LinearOpMode {
         int[] currentPositions;
         int[] targetPositions = new int[robot.motors.size()];
 
+
+
         waitForStart();
 
         while(opModeIsActive()){
             double yPower = Range.clip(gamepad1.left_stick_y,-maxPower,maxPower);
-            double xPower = Range.clip(gamepad1.left_stick_x,-maxPower,maxPower);
+            double xPower = -Range.clip(gamepad1.left_stick_x,-maxPower,maxPower);
 
             double rotate = Range.clip(gamepad1.right_stick_x,-maxPower,maxPower);
 

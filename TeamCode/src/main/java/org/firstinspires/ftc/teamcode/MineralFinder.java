@@ -52,7 +52,7 @@ public class MineralFinder {
     public boolean foundGold(List<Recognition> recognitions){
         boolean found = false;
         for(Recognition r:recognitions){
-            if (r.getLabel() == LABEL_GOLD_MINERAL){
+            if ((r.getLabel() == LABEL_GOLD_MINERAL) && r.getConfidence() > 0.7){
                 found = true;
             }
         }
