@@ -16,6 +16,8 @@ public class MecanumTeleOp extends LinearOpMode {
 
     private MecanumDriveTrain robot;
 
+    int[] currentPositions = {0,0,0,0};
+    int[] targetPosition = {0,0,0,0};
 
     @Override
     public void runOpMode(){
@@ -23,6 +25,8 @@ public class MecanumTeleOp extends LinearOpMode {
         robot = new MecanumDriveTrain(hardwareMap,"Motor1","Motor2","Motor3","Motor4");
         robot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        robot.setZeroPowerBehaviour(DcMotor.ZeroPowerBehavior.BRAKE);
 
         waitForStart();
 
@@ -41,6 +45,24 @@ public class MecanumTeleOp extends LinearOpMode {
 
             conditional = gamepad1.right_bumper?1:0;
             maxPower = maxPower1 + conditional*0.2;
+
+            currentPositions = robot.getCurrentPositions();
+            targetPosition = (gamepad1.a)?currentPositions:targetPosition;
+
+            if (gamepad1.x){
+                robot.goToPositions(targetPosition,maxPower);
+            }
+
+            String message = "";
+            for(int i = 0;i<currentPositions.length;i++){
+                int p = currentPositions[i];
+                int t = targetPosition[i];
+                message = " Position: " + Integer.toString(p) + " Target: " + Integer.toString(t);
+            }
+            telemetry.addData("Motor Data:",message);
+            telemetry.update();
+
+
 
         }
     }

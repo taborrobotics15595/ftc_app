@@ -33,6 +33,11 @@ public class MecanumDriveTrain {
         }
     }
 
+    public void resetEncoders(){
+        this.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
     public void setZeroPowerBehaviour(DcMotor.ZeroPowerBehavior behaviour){
         for(DcMotor motor:motors){
             motor.setZeroPowerBehavior(behaviour);
@@ -78,9 +83,39 @@ public class MecanumDriveTrain {
         return sum;
     }
 
+    public int[] getCurrentPositions(){
+        int[] positions = new int[motors.size()];
+        for(DcMotor motor:motors){
+            int p = motor.getCurrentPosition();
+            positions[motors.indexOf(motor)] = p;
+        }
+        return positions;
+    }
+
+    public void goToPositions(int[] positions,double returnPower){
+        for(int i = 0;i<motors.size();i++){
+            motors.get(i).setTargetPosition(positions[i]);
+        }
+        this.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        int motorsBusy = 4;
+        while (motorsBusy > 0) {
+            motorsBusy = 0;
+            for (int i = 0; i < motors.size(); i++) {
+                DcMotor motor = motors.get(i);
+                boolean busy = motor.isBusy();
+                if (busy) {
+                    motor.setPower(returnPower);
+                } else {
+                    motor.setPower(0);
+                    motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                }
+                motorsBusy = (busy) ? (motorsBusy + 1) : motorsBusy;
+            }
 
 
-
+        }
+    }
 
 
 

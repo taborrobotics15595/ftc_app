@@ -94,9 +94,6 @@ public class AutonomousTry extends LinearOpMode {
             telemetry.addData("Stats:",message);
             telemetry.update();
 
-
-
-
         }
 
     }

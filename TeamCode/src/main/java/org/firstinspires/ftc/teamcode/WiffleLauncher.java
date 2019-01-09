@@ -54,9 +54,6 @@ public class WiffleLauncher {
             m2.setPower(currentPower2);
 
         }
-
-
-
     }
 
     public void stop(){
