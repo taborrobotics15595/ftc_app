@@ -34,7 +34,7 @@ public class MecanumTeleOp extends LinearOpMode {
             double powerY = Range.clip(gamepad1.left_stick_y,-maxPower,maxPower);
             double powerX = Range.clip(gamepad1.left_stick_x,-maxPower,maxPower);
 
-            double turn = Range.clip(gamepad1.right_stick_x,-maxPower,maxPower);
+            double turn = -Range.clip(gamepad1.right_stick_x,-maxPower,maxPower);
 
             if (turn != 0){
                 robot.turn(turn);

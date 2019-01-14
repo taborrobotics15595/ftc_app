@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import java.util.ArrayList;
@@ -18,14 +19,20 @@ public class OmniFlynn extends LinearOpMode {
 
     double maxLaunch1 = 0.7;
     double maxLaunch2 = 0.9;
-    double currentMax = maxLaunch1;
+    double currentMax = 0;
+
     boolean increasing = false;
+    boolean finished = false;
+    boolean moving = false;
+
+    double currentTime = 0;
 
 
 
 
     @Override
     public void runOpMode(){
+        ElapsedTime runtime = new ElapsedTime();
         robot = new HolonomicDriveTrain(hardwareMap,"Motor1","Motor2","Motor3","Motor4");
         launcher = new WiffleLauncher(hardwareMap,"Launch1","Launch2","Spinner");
 
@@ -54,27 +61,41 @@ public class OmniFlynn extends LinearOpMode {
             if (gamepad1.a){
                 currentMax = maxLaunch1;
                 increasing = true;
-            }
+                moving = true;
+                runtime.reset();
 
+            }
             if(gamepad1.x){
                 currentMax = maxLaunch2;
                 increasing = true;
+                moving = true;
+                runtime.reset();
             }
 
             if(gamepad1.b){
                 increasing = false;
+                moving = true;
+
             }
 
             if(gamepad1.y){
                 launcher.setup();
             }
 
-            if(increasing){
-                launcher.gradualChange(currentMax);
+            currentTime = runtime.seconds();
+            if(currentTime < 15) {
+                if (finished){
+                    launcher.setPower(currentMax);
+                }
+            }else{
+                increasing = false;
             }
-            else{
-                launcher.stop();
-            }
+
+            finished = launcher.gradualChange(increasing,moving,currentMax);
+
+
+            telemetry.addData("Status:",Boolean.toString(finished));
+            telemetry.update();
 
 
 

@@ -9,10 +9,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class MechanismsTeleOp extends LinearOpMode {
     Mechanisms mechs;
 
-
-
-    boolean bucketOpened = false;
-
     @Override
     public void runOpMode(){
         mechs = new Mechanisms(hardwareMap,"LiftMotor","GrabberMotor","TurnMotor","BucketServo","GrabberServo");
@@ -26,13 +22,13 @@ public class MechanismsTeleOp extends LinearOpMode {
 
 
             if(gamepad1.b){
-                if(bucketOpened){
+                if(mechs.bucketOpened){
                     mechs.openBucket();
                 }
                 else{
                     mechs.closeBucket();
                 }
-                bucketOpened = !bucketOpened;
+                mechs.bucketOpened = !mechs.bucketOpened;
             }
 
             if(gamepad1.right_bumper){

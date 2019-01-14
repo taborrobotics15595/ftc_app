@@ -10,8 +10,8 @@ public class MecanumDriveTrain {
 
     ArrayList<DcMotor> motors = new ArrayList<DcMotor>();
 
-    double[] forward = {1,-1,1,-1};
-    double[] right = {-1,-1,1,1};
+    double[] right = {1,-1,1,-1};
+    double[] forward = {-1,-1,1,1};
 
     double[] turn = {1,1,1,1};
 

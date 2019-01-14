@@ -25,7 +25,7 @@ public class ArmLift1 extends LinearOpMode {
 
 
         while(opModeIsActive()) {
-            double y = Range.clip(gamepad1.left_stick_y, -0.9, 0.9);
+            double y = Range.clip(gamepad1.left_stick_y, -0.75, 0.75);
             motor1.setPower(y);
             //motor2.setPower(y);
             //int encoder = motor1.getCurrentPosition();

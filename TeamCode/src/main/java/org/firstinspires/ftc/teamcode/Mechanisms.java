@@ -35,6 +35,8 @@ public class Mechanisms {
     public double spinningPower = 1;
     public boolean isSpinning = false;
 
+    public boolean bucketOpened = false;
+
 
 
     public Mechanisms(HardwareMap hardwareMap,String liftName,String grabberName,String turnName,String bucketServoName,String grabberServoName){
