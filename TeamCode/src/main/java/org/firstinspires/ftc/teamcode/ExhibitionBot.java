@@ -14,6 +14,7 @@ public class ExhibitionBot extends LinearOpMode {
     double maxLaunch1 = 0.7;
     double maxLaunch2 = 0.9;
     double currentMax = 0;
+    double increaseFactor = 0.1;
 
     boolean increasing = false;
     boolean finished = false;
@@ -45,11 +46,16 @@ public class ExhibitionBot extends LinearOpMode {
                 runtime.reset();
             }
 
+            double i = gamepad1.left_trigger * increaseFactor;
+            increasing = (i > 0);
+            currentMax += i;
+
+
             if(gamepad1.b){
                 increasing = false;
             }
 
-            if(gamepad1.y){
+            if(gamepad1.y || (gamepad1.right_trigger > 0)){
                 launcher.setup();
             }
 
@@ -64,6 +70,7 @@ public class ExhibitionBot extends LinearOpMode {
 
             finished = launcher.gradualChange(increasing,moving,currentMax);
 
+            moving = !finished;
 
             String message = "Max Power: " + Double.toString(currentMax) + "Finished: " +  Boolean.toString(finished) + "Time: " + Double.toString(currentTime);
             telemetry.addData("Status:",message);
