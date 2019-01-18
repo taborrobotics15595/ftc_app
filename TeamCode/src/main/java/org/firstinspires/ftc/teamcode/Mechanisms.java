@@ -38,6 +38,13 @@ public class Mechanisms {
     public boolean bucketOpened = false;
 
 
+    public Mechanisms(HardwareMap hardwareMap,String liftName){
+        liftArmMotor = hardwareMap.get(DcMotor.class,liftName);
+
+        liftArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftArmMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
 
     public Mechanisms(HardwareMap hardwareMap,String liftName,String grabberName,String turnName,String bucketServoName,String grabberServoName){
         liftArmMotor = hardwareMap.get(DcMotor.class,liftName);
@@ -105,6 +112,30 @@ public class Mechanisms {
     public void stopSpinning(){
         isSpinning = false;
         grabber.setPower(0);
+    }
+
+    public void moveMotor(boolean buttonPressed, Mechanisms.MotorConstants motorData){
+        DcMotor motor = motorData.motor;
+        int maxPos = motorData.max;
+        int minPos = motorData.min;
+        double power = motorData.power;
+        boolean extended = motorData.extended;
+
+        if (buttonPressed){
+            if(extended) {
+                this.drop(motor,minPos,power);
+            }else{
+                this.lift(motor,maxPos,power);
+            }
+            extended = !extended;
+        }
+
+        if (!this.isLifting(motor)){
+            this.stopLift(motor);
+        }
+
+        motorData.extended = extended;
+
     }
 
     enum MotorConstants{

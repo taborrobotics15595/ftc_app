@@ -30,7 +30,7 @@ public class WiffleLauncher {
 
 
     public void setup(){
-        m3.setTargetPosition(-96);
+        m3.setTargetPosition(96);
         m3.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         while(m3.isBusy()){
             m3.setPower(0.5);
@@ -49,7 +49,7 @@ public class WiffleLauncher {
         boolean done1 = false;
         boolean done2 = false;
 
-        if ((pos%interval == 0) && moving && ((increase <= currentPower1) || (currentPower1 <= maxPower))){
+        if ((pos%interval == 0) && moving && ((0 <= currentPower1) || (currentPower1 <= maxPower))){
             currentPower1 = Range.clip(currentPower1 + increase*f,0,maxPower);
             m1.setPower(currentPower1);
         }
@@ -57,7 +57,7 @@ public class WiffleLauncher {
             done1 = true;
         }
 
-        if ((pos2%interval == 0) && moving && ((increase <= currentPower2) || (currentPower2 <= maxPower))){
+        if ((pos2%interval == 0) && moving && ((0 <= currentPower2) || (currentPower2 <= maxPower))){
             currentPower2 = Range.clip(currentPower2 + increase*f,0,maxPower);
             m2.setPower(currentPower2);
         }

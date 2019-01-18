@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 @TeleOp
 public class MecanumTeleOp extends LinearOpMode {
 
@@ -34,7 +36,7 @@ public class MecanumTeleOp extends LinearOpMode {
             double powerY = Range.clip(gamepad1.left_stick_y,-maxPower,maxPower);
             double powerX = Range.clip(gamepad1.left_stick_x,-maxPower,maxPower);
 
-            double turn = -Range.clip(gamepad1.right_stick_x,-maxPower,maxPower);
+            double turn = Range.clip(gamepad1.right_stick_x,-maxPower,maxPower);
 
             if (turn != 0){
                 robot.turn(turn);
@@ -59,6 +61,10 @@ public class MecanumTeleOp extends LinearOpMode {
                 int t = targetPosition[i];
                 message = " Position: " + Integer.toString(p) + " Target: " + Integer.toString(t);
             }
+
+            double d = robot.getDistance(DistanceUnit.CM);
+            message += " Distance: " + Double.toString(d);
+
             telemetry.addData("Motor Data:",message);
             telemetry.update();
 

@@ -10,6 +10,8 @@ public class ServoExplo extends LinearOpMode {
     Servo s;
 
 
+
+
     double maxPos = 1;
     double minPos = 0;
 

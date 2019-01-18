@@ -41,14 +41,12 @@ public class OmniFlynn extends LinearOpMode {
         robot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        int[] currentPositions;
-        int[] targetPositions = new int[robot.motors.size()];
 
         waitForStart();
 
         while(opModeIsActive()){
-            double yPower = -Range.clip(gamepad1.left_stick_x,-maxPower,maxPower);
-            double xPower = Range.clip(gamepad1.left_stick_y,-maxPower,maxPower);
+            double yPower = Range.clip(gamepad1.left_stick_x,-maxPower,maxPower);
+            double xPower = -Range.clip(gamepad1.left_stick_y,-maxPower,maxPower);
 
             double rotate = -Range.clip(gamepad1.right_stick_x,-maxPower,maxPower);
 
@@ -57,6 +55,19 @@ public class OmniFlynn extends LinearOpMode {
             }
             else{
                 robot.setPower(yPower,xPower);
+            }
+
+            if (gamepad1.left_trigger > 0){
+                currentMax = Range.clip(currentMax + increaseFactor,-1,1);
+                increasing = true;
+                moving = true;
+
+            }
+            else{
+                currentMax = 0;
+                increasing = false;
+                moving = false;
+
             }
 
             if (gamepad1.a){
@@ -73,10 +84,6 @@ public class OmniFlynn extends LinearOpMode {
                 runtime.reset();
             }
 
-            double i = gamepad1.left_trigger * increaseFactor;
-            increasing = (i > 0);
-            currentMax += i;
-
 
             if(gamepad1.b){
                 increasing = false;
@@ -92,31 +99,16 @@ public class OmniFlynn extends LinearOpMode {
                     launcher.setPower(currentMax);
                 }
             }else{
-                increasing = false;
+                //increasing = false;
             }
 
             finished = launcher.gradualChange(increasing,moving,currentMax);
 
-            moving = !finished;
 
             String message = "Max Power: " + Double.toString(currentMax) + "Finished: " +  Boolean.toString(finished) + "Time: " + Double.toString(currentTime);
             telemetry.addData("Status:",message);
             telemetry.update();
 
-
-            //currentPositions = robot.getCurrentPositions();
-            //targetPositions = (gamepad1.a)?currentPositions:targetPositions;
-            //if(gamepad1.x){
-                //robot.moveToPositions(targetPositions);
-            //}
-            //String message = "";
-            //for(int index = 0;index < robot.motors.size();index ++){
-                //int current = currentPositions[index];
-                //int target = targetPositions[index];
-                //message += " Current: " + Integer.toString(current) + "Target: " + Integer.toString(target);
-            //}
-            //telemetry.addData("Status:",message);
-            //telemetry.update();
         }
     }
 }

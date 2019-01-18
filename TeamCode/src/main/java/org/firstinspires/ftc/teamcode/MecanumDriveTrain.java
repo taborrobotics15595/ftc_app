@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.ArrayList;
 
@@ -10,14 +13,17 @@ public class MecanumDriveTrain {
 
     ArrayList<DcMotor> motors = new ArrayList<DcMotor>();
 
-    double[] right = {1,-1,1,-1};
-    double[] forward = {-1,-1,1,1};
+    DistanceSensor distanceSensor;
 
-    double[] turn = {1,1,1,1};
+    double[] right = {-1,-1,1,1};
+    double[] forward = {-1,1,-1,1};
+
+    double[] turn = {-1,-1,-1,-1};
 
 
 
     public MecanumDriveTrain(HardwareMap hardwareMap, String ... motorNames){
+        distanceSensor = hardwareMap.get(DistanceSensor.class,"Distance");
         for (int i = 0;i<motorNames.length;i++){
             DcMotor currentMotor = hardwareMap.get(DcMotor.class,motorNames[i]);
             currentMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -25,6 +31,10 @@ public class MecanumDriveTrain {
         }
 
 
+    }
+
+    public double getDistance(DistanceUnit unit){
+        return distanceSensor.getDistance(unit);
     }
 
     public void setMode(DcMotor.RunMode mode){
