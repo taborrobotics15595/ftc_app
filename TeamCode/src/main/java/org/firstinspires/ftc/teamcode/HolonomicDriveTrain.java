@@ -1,24 +1,28 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.ArrayList;
 
 public class HolonomicDriveTrain {
     public ArrayList<DcMotor> motors = new ArrayList<DcMotor>();
+    DistanceSensor distanceSensor;
 
     double[] forward = {1,-1,1,-1};
     double[] right = {1,1,-1,-1};
     double[] turn = {1,1,1,1};
 
-    double returnPower = 0.3;
 
-    public HolonomicDriveTrain(HardwareMap hardwareMap,String ... names){
+    public HolonomicDriveTrain(HardwareMap hardwareMap,String distanceSensroName,String ... names){
         for(String name:names){
             DcMotor currentMotor = hardwareMap.get(DcMotor.class,name);
             motors.add(currentMotor);
         }
+        distanceSensor = hardwareMap.get(DistanceSensor.class,distanceSensroName);
     }
 
     public void setMode(DcMotor.RunMode mode){
@@ -40,7 +44,7 @@ public class HolonomicDriveTrain {
         applyPower(powers, 1);
     }
 
-    public void rotate(double power){
+    public void turn(double power){
         applyPower(turn,power);
     }
 
@@ -53,7 +57,7 @@ public class HolonomicDriveTrain {
         return positions;
     }
 
-    public void moveToPositions(int[] targetPositions){
+    public void goToPositions(int[] targetPositions,double returnPower){
         for(int i = 0;i<motors.size();i++){
             DcMotor motor = motors.get(i);
             int targetPosition = targetPositions[i];
@@ -108,5 +112,9 @@ public class HolonomicDriveTrain {
             sum[i] = p;
         }
         return sum;
+    }
+
+    public double getDistance(DistanceUnit unit){
+        return distanceSensor.getDistance(unit);
     }
 }

@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp
 public class FInalRobot extends LinearOpMode {
-    MecanumDriveTrain robot;
+    HolonomicDriveTrain robot;
     Mechanisms mechanisms;
 
     private double maxPower1 = 0.5;
@@ -24,7 +24,7 @@ public class FInalRobot extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        robot = new MecanumDriveTrain(hardwareMap, "Motor1", "Motor2", "Motor3", "Motor4");
+        robot = new HolonomicDriveTrain(hardwareMap, "Motor1", "Motor2", "Motor3", "Motor4");
         robot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -36,7 +36,7 @@ public class FInalRobot extends LinearOpMode {
 
         while (opModeIsActive()) {
             double powerY = Range.clip(gamepad1.left_stick_y, -maxPower, maxPower);
-            double powerX = Range.clip(gamepad1.left_stick_x, -maxPower, maxPower);
+            double powerX = -Range.clip(gamepad1.left_stick_x, -maxPower, maxPower);
 
             double turn = Range.clip(gamepad1.right_stick_x, -maxPower, maxPower);
 
@@ -46,8 +46,8 @@ public class FInalRobot extends LinearOpMode {
                 robot.setPower(powerY, powerX);
             }
 
-            conditional = gamepad1.right_bumper ? 1 : 0;
-            maxPower = maxPower1 + conditional * 0.2;
+
+            maxPower = maxPower1 + (gamepad1.right_trigger * 0.2);
 
             mechanisms.moveMotor(gamepad1.b,Mechanisms.MotorConstants.LIFT);
 
