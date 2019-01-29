@@ -12,7 +12,7 @@ import java.util.List;
 public class AutonomousCorner1 extends LinearOpMode {
 
     MineralFinder finder;
-    MecanumDriveTrain robot;
+    HolonomicDriveTrain robot;
 
     int[] start = {580,-580,580,-580};
     int[] slideRight = {570,570,-570,-570};
@@ -35,7 +35,7 @@ public class AutonomousCorner1 extends LinearOpMode {
     @Override
     public void runOpMode(){
         finder = new MineralFinder(hardwareMap);
-        robot = new MecanumDriveTrain(hardwareMap,"Motor1","Motor2","Motor3","Motor4");
+        robot = new HolonomicDriveTrain(hardwareMap,"Motor1","Motor2","Motor3","Motor4");
 
         robot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -44,11 +44,12 @@ public class AutonomousCorner1 extends LinearOpMode {
         waitForStart();
 
         robot.goToPositions(start,returnPower);
-        robot.resetEncoders();
+        robot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         while(opModeIsActive()){
             List<Recognition> r = finder.getRecognitions();
-            String message = "";
+            String message;
             if(!hasFound) {
                 if (finder.foundGold(r)) {
                     hasFound = true;
@@ -71,9 +72,11 @@ public class AutonomousCorner1 extends LinearOpMode {
                 }
             }
             else{
-                robot.resetEncoders();
+                robot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 robot.goToPositions(start,returnPower);
-                robot.resetEncoders();
+                robot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 robot.goToPositions(park,returnPower);
                 break;
             }

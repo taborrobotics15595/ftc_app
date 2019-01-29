@@ -3,13 +3,26 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-public class MechanismsTry2 {
-    DcMotor liftMotor,extendArmMotor,dropMineralMotor;
+public class MechanismsHolonomic {
+    static DcMotor liftMotor,extendArmMotor,dropMineralMotor;
 
-    int liftMax = 100;
-    int liftMin = 0;
+    static int liftMax = 100;
+    static int liftMin = 0;
+    static double liftPower = 0.5;
+    static boolean liftExtended = false;
 
-    public MechanismsTry2(HardwareMap hardwareMap,String liftName,String extendName,String dropName){
+    static int extendMax = 100;
+    static int extendMin = 0;
+    static double extendPower = 0.5;
+    static boolean extendExtended = false;
+
+    static int dropMax = 100;
+    static int dropMin = 0;
+    static double dropPower = 0.5;
+    static boolean dropExtended = false;
+
+
+    public MechanismsHolonomic(HardwareMap hardwareMap,String liftName,String extendName,String dropName){
         liftMotor = hardwareMap.get(DcMotor.class,liftName);
         extendArmMotor = hardwareMap.get(DcMotor.class,extendName);
         dropMineralMotor = hardwareMap.get(DcMotor.class,dropName);
@@ -40,7 +53,7 @@ public class MechanismsTry2 {
     }
 
 
-    public void moveMotor(boolean buttonPressed, MechanismsTry2.MotorConstants motorData){
+    public void moveMotor(boolean buttonPressed, MechanismsHolonomic.MotorConstants motorData){
         DcMotor motor = motorData.motor;
         int maxPos = motorData.max;
         int minPos = motorData.min;
@@ -62,9 +75,9 @@ public class MechanismsTry2 {
     }
 
     enum MotorConstants{
-        LIFT(Mechanisms.liftArmMotor,Mechanisms.liftMaxPosition,Mechanisms.liftMinPosition,Mechanisms.liftPower,Mechanisms.liftExtended),
-        EXTEND(Mechanisms.grabberArmMotor,Mechanisms.grabberMaxPosition,Mechanisms.grabberMinPosition,Mechanisms.grabberPower,Mechanisms.grabberExtended),
-        DROP(Mechanisms.turnMotor,Mechanisms.turnMotorMax,Mechanisms.turnMotorMin,Mechanisms.turnPower,Mechanisms.turnExtended);
+        LIFT(MechanismsHolonomic.liftMotor,MechanismsHolonomic.liftMax,MechanismsHolonomic.liftMin,MechanismsHolonomic.liftPower,MechanismsHolonomic.liftExtended),
+        EXTEND(MechanismsHolonomic.extendArmMotor,MechanismsHolonomic.extendMax,MechanismsHolonomic.extendMin,MechanismsHolonomic.extendPower,MechanismsHolonomic.extendExtended),
+        DROP(MechanismsHolonomic.dropMineralMotor,MechanismsHolonomic.dropMax,MechanismsHolonomic.dropMin,MechanismsHolonomic.dropPower,MechanismsHolonomic.dropExtended);
 
         public DcMotor motor;
         public int max;

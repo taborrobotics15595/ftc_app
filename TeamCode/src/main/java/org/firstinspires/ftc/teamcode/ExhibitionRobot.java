@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.Range;
 import java.util.ArrayList;
 
 @TeleOp
-public class OmniFlynn extends LinearOpMode {
+public class ExhibitionRobot extends LinearOpMode {
 
     HolonomicDriveTrain robot;
 
