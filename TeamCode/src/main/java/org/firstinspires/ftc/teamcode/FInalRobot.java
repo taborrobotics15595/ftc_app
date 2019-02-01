@@ -12,7 +12,7 @@ public class FInalRobot extends LinearOpMode {
     HolonomicDriveTrain robot;
     MechanismsHolonomic mechanisms;
 
-    private double maxPower1 = 0.5;
+    private double maxPower1 = 0.3;
 
     private int conditional = 1;
 
@@ -24,13 +24,14 @@ public class FInalRobot extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        robot = new HolonomicDriveTrain(hardwareMap, "Motor1", "Motor2", "Motor3", "Motor4");
+        robot = new HolonomicDriveTrain(hardwareMap, "Distance","Motor1", "Motor2", "Motor3", "Motor4");
         robot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         robot.setZeroPowerBehaviour(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        mechanisms = new MechanismsHolonomic(hardwareMap, "Lift_Motor","Extend_Motor","Drop_Motor");
+        mechanisms = new MechanismsHolonomic(hardwareMap, "Lift_Motor","Extend_Motor","Drop_Motor","Swing_Motor","Flip_Servo");
+        mechanisms.setMotorZeroPowerBehaviour(MechanismsHolonomic.MotorConstants.SWING.motor,DcMotor.ZeroPowerBehavior.BRAKE);
 
         waitForStart();
 
@@ -49,9 +50,11 @@ public class FInalRobot extends LinearOpMode {
 
             maxPower = maxPower1 + (gamepad1.right_trigger * 0.2);
 
-            mechanisms.moveMotor(gamepad1.right_bumper,MechanismsHolonomic.MotorConstants.LIFT);
-            mechanisms.moveMotor(gamepad1.left_bumper,MechanismsHolonomic.MotorConstants.EXTEND);
-            mechanisms.moveMotor(gamepad1.y,MechanismsHolonomic.MotorConstants.DROP);
+            mechanisms.moveMotor(gamepad2.a,MechanismsHolonomic.MotorConstants.LIFT);
+            mechanisms.moveMotor(gamepad2.b,MechanismsHolonomic.MotorConstants.EXTEND);
+            mechanisms.moveMotor(gamepad2.right_bumper,MechanismsHolonomic.MotorConstants.SWING);
+            mechanisms.spin(gamepad2.y);
+            mechanisms.flip(gamepad2.x);
 
             currentPositions = robot.getCurrentPositions();
             targetPosition = (gamepad1.a) ? currentPositions : targetPosition;
@@ -72,6 +75,8 @@ public class FInalRobot extends LinearOpMode {
 
             telemetry.addData("Motor Data:", message);
             telemetry.update();
+
+            idle();
 
         }
     }

@@ -16,21 +16,17 @@ public class ArmLift1 extends LinearOpMode {
     @Override
     public void runOpMode(){
         motor1 = hardwareMap.get(DcMotor.class,"Motor1");
-       // motor2 = hardwareMap.get(DcMotor.class,"Motor2");
 
-        //motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        double power = 0.5;
+
 
         waitForStart();
 
 
         while(opModeIsActive()) {
-            double y = Range.clip(gamepad1.left_stick_y, -0.75, 0.75);
+            double y = Range.clip(gamepad1.left_stick_y, -power,power);
             motor1.setPower(y);
-            //motor2.setPower(y);
-            //int encoder = motor1.getCurrentPosition();
-            //telemetry.addData("Encoder Value:",Integer.toString(encoder));
-            //telemetry.update();
+
         }
 
     }
