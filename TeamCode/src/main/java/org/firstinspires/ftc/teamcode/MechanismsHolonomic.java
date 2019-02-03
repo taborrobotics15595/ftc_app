@@ -12,19 +12,19 @@ public class MechanismsHolonomic {
     double flipMin = 0;
     double flipCurrent = 0;
 
-    static int liftMax = -8000;
+    static int liftMax = 5000;
     static int liftMin = 0;
     static double liftPower = 1;
     static boolean liftExtended = false;
 
-    static int extendMax = 2000;
+    static int extendMax = -3000;
     static int extendMin = 0;
     static double extendPower = 1;
     static boolean extendExtended = false;
 
     static int swingMax = -2257;
     static int swingMin = 0;
-    static double swingPower = 1;
+    static double swingPower = 0.5;
     static boolean swingExtended = false;
 
     double dropPower = -0.5;
@@ -107,6 +107,27 @@ public class MechanismsHolonomic {
         }
 
         motorData.extended = extended;
+
+    }
+
+    public void extendMotor(MechanismsHolonomic.MotorConstants data){
+        DcMotor motor = data.motor;
+        int max = data.max;
+        int min = data.min;
+        boolean extended = data.extended;
+        double power = data.power;
+
+        int target = (extended)?min:max;
+
+        motor.setTargetPosition(target);
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while(motor.isBusy()){
+            motor.setPower(power);
+        }
+        motor.setPower(0);
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        data.extended = !extended;
 
     }
 

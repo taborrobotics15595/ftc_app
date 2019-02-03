@@ -19,6 +19,8 @@ public class TestEncoder extends LinearOpMode{
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         currentPosition = motor.getCurrentPosition();
         targetPosition = currentPosition;
 

@@ -49,6 +49,7 @@ public class MineralFinder {
         return recognitions;
     }
 
+
     public boolean foundGold(List<Recognition> recognitions){
         boolean found = false;
         for(Recognition r:recognitions){
@@ -59,39 +60,85 @@ public class MineralFinder {
         return found;
     }
 
-    public String getGoldPosition(List<Recognition> recognitions){
-        String pos = "";
-        if (recognitions.size() == 3){
-            float gold = -1;
-            float silver1 = -1;
-            float silver2 = -1;
 
-            for(Recognition r:recognitions){
-                if ((r.getLabel() == LABEL_GOLD_MINERAL)){
-                    gold = r.getLeft();
-                }
-                else if(silver1 == -1){
-                    silver1 = r.getLeft();
+
+
+
+    public String getGoldPosition(List<Recognition> r){
+        String message = "";
+        if (r.size() == 3){
+            float g = -1;
+            float s1 = -1;
+            float s2 = -1;
+            for(Recognition rec:r){
+                if (rec.getLabel() == "Gold Mineral"){
+                    g = rec.getRight();
                 }
                 else{
-                    silver2 = r.getLeft();
-
+                    if (s1 == -1){
+                        s1 = rec.getRight();
+                    }else{
+                        s2 = rec.getRight();
+                    }
                 }
-
             }
-            if ((gold < silver1) &&(gold < silver2)){
-                pos = "Left";
+            if ((g > s1)&&(g>s2)){
+                message = "right";
             }
-            else if((gold > silver1) && (gold > silver2)){
-                pos = "Right";
+            else if ((g < s1) && (g<s2)){
+                message = "left";
             }
             else{
-                pos = "Center";
+                message = "middle";
             }
         }
-        return pos;
+        else if(r.size() == 2){
+            if (foundGold(r)){
+                float g = -1;
+                float s = -1;
+                for(Recognition rec:r){
+                    if (rec.getLabel() == "Gold Mineral"){
+                        g = rec.getRight();
+                    }
+                    else{
+                        s = rec.getRight();
+                    }
+                }
+
+                if ((g > s) && (g>900)){
+                    message = "right";
+                }
+                else if (g>s){
+                    message = "middle";
+                }
+                else if (s>900){
+                    message = "middle";
+                }
+                else{
+                    message = "left";
+                }
+                if (g == -1){
+                    message = "unknown";
+                }
+            }
+        }
+        else if (r.size() == 1){
+            float g = r.get(0).getRight();
+            if (foundGold(r) && (g>900)){
+                message = "middle";
+            }
+            else{
+                message = "turn";
+            }
+        }
+        else{
+            message = "unknown";
+        }
+        return message;
 
     }
+
+
 
     public double getGoldAngle(List<Recognition> recognitions){
         double angle = 90;

@@ -2,10 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Autonomous
@@ -14,35 +16,33 @@ public class IterativeAutonomousCorner1 extends OpMode {
     HolonomicDriveTrain driveTrain;
     MechanismsHolonomic mechanisms;
 
-    int[] start = {580,-580,580,-580};
-    int[] slideRight = {570,570,-570,-570};
-    int[] middle = {0,0,0,0};
-    int[] slideLeft = {-600,-600,600,600};
-    int[] park = {200,-200,200,-200};
+    int[] turnRight = {150,150,150,160};
+    int[] straight = {150,-150,150,-150};
+    double power = 0.3;
 
-    int[][] positions = {slideLeft,middle,slideRight};
-
-    double returnPower = 0.3;
-
+    boolean hasTurned = false;
     boolean hasFound = false;
 
-    int wiggleCount = 0;
+    int p = 1;
+    ArrayList<String> positions = new ArrayList<>();
 
-    int f = 50;
 
-    int index = 1;
 
     @Override
     public void init(){
+        positions.add("left");
+        positions.add("middle");
+        positions.add("right");
         finder = new MineralFinder(hardwareMap);
+
         driveTrain = new HolonomicDriveTrain(hardwareMap,"Motor1","Motor2","Motor3","Motor4");
-        mechanisms = new MechanismsHolonomic(hardwareMap,"Lift_Motor","Extend_Motor","Drop_Motor","Swing_motor","Flip_Servo");
+        mechanisms = new MechanismsHolonomic(hardwareMap,"Lift_Motor","Extend_Motor","Drop_Motor","Swing_Motor","Flip_Servo");
 
         driveTrain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         driveTrain.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         driveTrain.setZeroPowerBehaviour(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        mechanisms.setMotorZeroPowerBehaviour(MechanismsHolonomic.MotorConstants.LIFT.motor,DcMotor.ZeroPowerBehavior.BRAKE);
+        mechanisms.setMotorZeroPowerBehaviour(MechanismsHolonomic.MotorConstants.SWING.motor,DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     @Override
@@ -53,47 +53,49 @@ public class IterativeAutonomousCorner1 extends OpMode {
 
     @Override
     public void start(){
-        mechanisms.dropRobot();
+        //mechanisms.dropRobot();
+        finder.activate();
+
+        int p[] = {50,-50,50,-50};
+        driveTrain.goToPositions(p,power);
 
     }
 
     @Override
     public void loop(){
+
+
         List<Recognition> r = finder.getRecognitions();
-        String message = "";
-        if(!hasFound) {
-            if (finder.foundGold(r)) {
-                hasFound = true;
-                message = "found";
-            } else {
-                if (wiggleCount != 2) {
-                    int[] tPos = wiggle(f - wiggleCount * 2*f);
-                    driveTrain.goToPositions(tPos,returnPower);
-                    wiggleCount += 1;
-                    message = "wiggle" + Integer.toString(wiggleCount);
-                }
-                else{
-                    wiggleCount = 0;
-                    int[] p = positions[index];
-                    driveTrain.goToPositions(p,returnPower);
-                    index  = (index + 1)%positions.length;
-                    message = "turning" + Integer.toString(index);
+        String message = finder.getGoldPosition(r);
 
+        if (!hasFound) {
+            if (message == "turn") {
+                if (p == 1) {
+                    driveTrain.goToPositions(turnRight, power);
+                } else if (p == 2) {
+                    driveTrain.goToPositions(multiplyLists(turnRight, -2), power);
                 }
+                p = (p + 1) % 3;
             }
-        }
-        else{
-            driveTrain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            driveTrain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            driveTrain.goToPositions(start,returnPower);
-            driveTrain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            driveTrain.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            driveTrain.goToPositions(park,returnPower);
+            } else if (message != "unknown") {
+                int difference = positions.indexOf(message) - p;
+                driveTrain.goToPositions(multiplyLists(turnRight, difference), power);
+                hasFound = true;
+            }
 
+        else{
+            int[] fullTurn = {-700,-700,-700,-700};
+            driveTrain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            driveTrain.goToPositions(fullTurn,power);
+            driveTrain.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            driveTrain.goToPositions(straight,power);
+            mechanisms.extendMotor(MechanismsHolonomic.MotorConstants.SWING);
+            mechanisms.extendMotor(MechanismsHolonomic.MotorConstants.EXTEND);
             this.stop();
 
         }
-        telemetry.addData("Stats:",message);
+
+        telemetry.addData("Stats:", message);
         telemetry.update();
 
     }
@@ -102,14 +104,14 @@ public class IterativeAutonomousCorner1 extends OpMode {
 
     @Override
     public void stop(){
-
+        driveTrain.halt();
     }
 
-    public int[] wiggle(int f){
-        int n[] = driveTrain.getCurrentPositions();
-        for(int i = 0;i<n.length;i++){
-            n[i] += (f*slideRight[i]/Math.abs(slideRight[i]));
-
+    public int[] multiplyLists(int[] list,int number){
+        int[] n = new int[list.length];
+        for(int i = 0;i<list.length;i++){
+            int a = list[i]*number;
+            n[i] = a;
         }
         return n;
     }

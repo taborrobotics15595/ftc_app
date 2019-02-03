@@ -10,19 +10,18 @@ import java.util.ArrayList;
 
 public class HolonomicDriveTrain {
     public ArrayList<DcMotor> motors = new ArrayList<DcMotor>();
-    DistanceSensor distanceSensor;
 
     double[] forward = {1,-1,1,-1};
     double[] right = {1,1,-1,-1};
     double[] turn = {1,1,1,1};
 
 
-    public HolonomicDriveTrain(HardwareMap hardwareMap,String distanceSensroName,String ... names){
+    public HolonomicDriveTrain(HardwareMap hardwareMap,String ... names){
         for(String name:names){
             DcMotor currentMotor = hardwareMap.get(DcMotor.class,name);
             motors.add(currentMotor);
         }
-        distanceSensor = hardwareMap.get(DistanceSensor.class,distanceSensroName);
+
     }
 
     public void setMode(DcMotor.RunMode mode){
@@ -86,6 +85,12 @@ public class HolonomicDriveTrain {
 
     }
 
+    public void halt(){
+        for(DcMotor m:motors){
+            m.setPower(0);
+        }
+    }
+
     private  void applyPower(double[] config,double power){
         for(int index = 0;index < motors.size();index++){
             double p = config[index] * power;
@@ -105,7 +110,7 @@ public class HolonomicDriveTrain {
         return sum;
     }
 
-    private double[] multiplyLists(double[] list, double power){
+    public double[] multiplyLists(double[] list, double power){
         double[] sum = new double[list.length];
         for(int i = 0;i<list.length;i++){
             double p = list[i]*power;
@@ -114,7 +119,4 @@ public class HolonomicDriveTrain {
         return sum;
     }
 
-    public double getDistance(DistanceUnit unit){
-        return distanceSensor.getDistance(unit);
-    }
 }
