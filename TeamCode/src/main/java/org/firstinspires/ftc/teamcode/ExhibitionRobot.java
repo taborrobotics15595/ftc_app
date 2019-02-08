@@ -39,7 +39,7 @@ public class ExhibitionRobot extends LinearOpMode {
         robot = new HolonomicDriveTrain(hardwareMap,"Motor1","Motor2","Motor3","Motor4");
         launcher = new WiffleLauncher(hardwareMap,"Launch1","Launch2","Spinner");
 
-        robot.setZeroPowerBehaviour(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //robot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //robot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -52,12 +52,8 @@ public class ExhibitionRobot extends LinearOpMode {
 
             double rotate = -Range.clip(gamepad1.right_stick_x,-maxPower,maxPower);
 
-            if (rotate != 0){
-                robot.turn(rotate);
-            }
-            else{
-                robot.setPower(yPower,xPower);
-            }
+            robot.setPower(maxPower,yPower,xPower,rotate);
+
 
             if (gamepad1.left_trigger > 0){
                 currentMax = Range.clip(currentMax + increaseFactor,-1,1);

@@ -9,33 +9,32 @@ import java.util.ArrayList;
 public class DriveTrain {
     ArrayList<DcMotor> motors = new ArrayList<>();
 
-    double[] forward;
-    double[] sideways;
-    double[] turn;
+    double[] forward = new double[4];
+    double[] sideways = new double[4];
+    double[] turn = new double[4];
 
     public DriveTrain(HardwareMap hardwareMap,String ... names){
         for(String name:names){
             DcMotor motor = hardwareMap.get(DcMotor.class,name);
             this.motors.add(motor);
         }
-
     }
 
-    public void setPower(double powerY,double powerX,double max){
+    public void setPower(double max,double powerY,double powerX,double powerTurn){
         double[] yComp = multiplyLists(forward,powerY);
         double[] xComp = multiplyLists(sideways,powerX);
-        double[] total = addLists(yComp,xComp,max);
-        applyPower(total);
+        double[] turnComp = multiplyLists(turn,powerTurn);
+        double[] total = addLists(yComp,xComp,turnComp);
+        applyPower(total,max);
     }
 
-    public void turn(double power){
-        double[] confic = multiplyLists(turn,power);
-        applyPower(confic);
-    }
 
-    public void applyPower(double [] power){
+    public void applyPower(double[] power,double max){
         for(int i = 0;i<motors.size();i++){
-            motors.get(i).setPower(power[i]);
+            DcMotor motor = motors.get(i);
+            double powerA  =Range.clip(power[i],-max,max);
+            motor.setPower(powerA);
+
         }
     }
 
@@ -48,13 +47,17 @@ public class DriveTrain {
         return newList;
     }
 
-    public double[] addLists(double[] list1,double[] list2,double max){
-        double[] newList = new double[list1.length];
-        for(int i = 0;i<list1.length;i++){
-            double value = Range.clip(list1[i] + list2[i],-max,max);
-            newList[i] = value;
+
+    private double[] addLists(double[] ... lists){
+        double[] sum =new double[lists[0].length];
+        for(int i=0;i<lists[0].length;i++){
+            double s = 0;
+            for (double[] list:lists){
+                s += list[i];
+            }
+            sum[i] = s;
         }
-        return newList;
+        return sum;
     }
 
 
@@ -69,6 +72,38 @@ public class DriveTrain {
             motor.setZeroPowerBehavior(behavior);
         }
     }
+
+    public int[] getCurrentPositions(){
+        int[] positions = new int[motors.size()];
+        for(int i = 0;i<motors.size();i++){
+            int p = motors.get(i).getCurrentPosition();
+            positions[i] = p;
+        }
+        return positions;
+    }
+
+    public void goToPositions(int[] target,double power){
+        for(int i = 0;i<motors.size();i++){
+            motors.get(i).setTargetPosition(target[i]);
+        }
+        this.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        int busy = 4;
+        while (busy > 0){
+            for(DcMotor motor:motors){
+                if (motor.isBusy()){
+                    motor.setPower(power);
+                }
+                else{
+                    motor.setPower(0);
+                    motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    busy --;
+                }
+            }
+        }
+    }
+
+
 
 
 }

@@ -13,6 +13,10 @@ public class TestEncoder extends LinearOpMode{
     int currentPosition;
     int targetPosition;
 
+    double[] powers = {0.75,1};
+    double powerA = 0.75;
+    int i = 0;
+
     @Override
     public void runOpMode(){
         motor = hardwareMap.get(DcMotor.class,"Motor1");
@@ -26,7 +30,12 @@ public class TestEncoder extends LinearOpMode{
 
         waitForStart();
         while(opModeIsActive()){
-            double power = Range.clip(gamepad1.left_stick_y,-0.2,0.2);
+            double power = Range.clip(gamepad1.left_stick_y,-powerA,powerA);
+
+            if (gamepad1.a){
+                i = (i + 1)%powers.length;
+                powerA = powers[i];
+            }
 
             motor.setPower(power);
 
@@ -37,16 +46,15 @@ public class TestEncoder extends LinearOpMode{
             if (gamepad1.x){
                 motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 while(motor.isBusy()) {
-                    power = (targetPosition - currentPosition)<0?0.2:-0.2;
-                    motor.setPower(power);
+                    motor.setPower(powerA);
                     telemetry.addData("Status","In loop");
                     telemetry.update();
                 }
-                motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 motor.setPower(0);
             }
 
-            String message = "Current: " + Integer.toString(currentPosition) + " Going to: " + Integer.toString(targetPosition);
+            String message = "Power: " + Double.toString(powerA) + " Current: " + Integer.toString(currentPosition) + " Going to: " + Integer.toString(targetPosition);
             telemetry.addData("Encoder Data:",message);
             telemetry.update();
 

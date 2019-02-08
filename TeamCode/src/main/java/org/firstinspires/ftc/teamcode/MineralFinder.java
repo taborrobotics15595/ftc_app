@@ -44,6 +44,10 @@ public class MineralFinder {
         }
     }
 
+    public void stop(){
+        tfod.shutdown();
+    }
+
     public List<Recognition> getRecognitions(){
         List<Recognition> recognitions = tfod.getRecognitions();
         return recognitions;
@@ -59,10 +63,6 @@ public class MineralFinder {
         }
         return found;
     }
-
-
-
-
 
     public String getGoldPosition(List<Recognition> r){
         String message = "";
@@ -117,14 +117,14 @@ public class MineralFinder {
                 else{
                     message = "left";
                 }
-                if (g == -1){
-                    message = "unknown";
-                }
+            }
+            else{
+                message = "other turn";
             }
         }
         else if (r.size() == 1){
             float g = r.get(0).getRight();
-            if (foundGold(r) && (g>900)){
+            if (foundGold(r) && (g<900)){
                 message = "middle";
             }
             else{
@@ -137,19 +137,5 @@ public class MineralFinder {
         return message;
 
     }
-
-
-
-    public double getGoldAngle(List<Recognition> recognitions){
-        double angle = 90;
-        for(Recognition r:recognitions) {
-            if ((r.getLabel() == LABEL_GOLD_MINERAL)) {
-                angle = r.estimateAngleToObject(AngleUnit.DEGREES);
-            }
-        }
-
-        return angle;
-    }
-
 
 }

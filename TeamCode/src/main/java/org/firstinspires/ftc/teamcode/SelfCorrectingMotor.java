@@ -15,7 +15,7 @@ public class SelfCorrectingMotor extends LinearOpMode {
     int current;
 
     double power = 0.5;
-    double constant = -0.2;
+    double constant = -0.1;
     double correctingPower;
     double difference;
 

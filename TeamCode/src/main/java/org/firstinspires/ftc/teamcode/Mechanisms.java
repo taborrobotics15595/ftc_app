@@ -1,162 +1,87 @@
 package org.firstinspires.ftc.teamcode;
 
-
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import java.util.ArrayList;
+
 public class Mechanisms {
-    public static DcMotor liftArmMotor,grabberArmMotor,turnMotor;
-    public Servo bucket;
-    public CRServo grabber;
+    DcMotor liftMotor,extendArmMotor,dropMineralMotor,swingArmMotor;
+    Servo flipBucket;
 
-    public static  int liftMaxPosition = 500;
-    public static int liftMinPosition = 0;
-    public static double liftPower = 0.5;
-    public static boolean liftExtended = false;
+    double flipMax = 1;
+    double flipMin = 0;
+    double flipCurrent = 0;
 
-    public static int grabberMaxPosition = 1500;
-    public static int grabberMinPosition = 0;
-    public static double grabberPower = 0.5;
-    public static boolean grabberExtended = false;
+    double liftPower = 1;
 
-    public static int turnMotorMax = 100;
-    public static int turnMotorMin = 0;
-    public static double turnPower = 0.5;
-    public static boolean turnExtended = false;
+    int extendMax = -3000;
+    int extendMin = 0;
+    double extendPower = 1;
+    boolean extendExtended = false;
 
-    public double bucketMaxPos = 1;
-    public double bucketMinPos = 0.5;
-    public double currentPos = bucketMaxPos;
-    public double interval = 0.1;
+    double swingPower = 0.5;
 
-    public double spinningPower = 1;
-    public boolean isSpinning = false;
+    double dropPower = -0.5;
+    boolean dropSpinning = false;
 
-    public boolean bucketOpened = false;
+    ArrayList<DcMotor> busyMotors = new ArrayList<>();
 
 
-    public Mechanisms(HardwareMap hardwareMap,String liftName){
-        liftArmMotor = hardwareMap.get(DcMotor.class,liftName);
+    public Mechanisms(HardwareMap hardwareMap, String liftName, String extendName, String dropName, String swingArmName, String flipName){
+        liftMotor = hardwareMap.get(DcMotor.class,liftName);
+        extendArmMotor = hardwareMap.get(DcMotor.class,extendName);
+        dropMineralMotor = hardwareMap.get(DcMotor.class,dropName);
+        swingArmMotor = hardwareMap.get(DcMotor.class,swingArmName);
 
-        liftArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        liftArmMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    }
+        flipBucket = hardwareMap.get(Servo.class,flipName);
 
-    public Mechanisms(HardwareMap hardwareMap,String liftName,String grabberName,String turnName,String bucketServoName,String grabberServoName){
-        liftArmMotor = hardwareMap.get(DcMotor.class,liftName);
-        grabberArmMotor = hardwareMap.get(DcMotor.class,grabberName);
-        turnMotor = hardwareMap.get(DcMotor.class,turnName);
-        bucket = hardwareMap.get(Servo.class,bucketServoName);
-        grabber = hardwareMap.get(CRServo.class,grabberServoName);
+        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        liftArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        liftArmMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        swingArmMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        swingArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        swingArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        swingArmMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        turnMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        turnMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        turnMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-
-        grabberArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        grabberArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        grabberArmMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        grabberArmMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        extendArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        extendArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     }
 
-    public void lift(DcMotor m, int maxPos, double power){
-        m.setTargetPosition(maxPos);
-        m.setPower(power);
-        m.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    public void flipBucket(){
+        double target = (flipCurrent == flipMax)?flipMin:flipMax;
+        flipCurrent = target;
+        flipBucket.setPosition(target);
+    }
+    public void setPower(DcMotor motor,double power){
+        motor.setPower(power);
     }
 
-    public void drop(DcMotor m,int minPos, double power){
-        m.setTargetPosition(minPos);
-        m.setPower(power);
-        m.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    public void toggleMotor(DcMotor motor,int pos,double power){
+        motor.setTargetPosition(pos);
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor.setPower(power);
+        busyMotors.add(motor);
     }
 
-    public void stopLift(DcMotor m){
-        m.setPower(0);
-    }
-
-    public boolean isLifting(DcMotor m){
-        return m.isBusy();
-    }
-
-    public void openBucket(){
-        for(double pos=currentPos;pos <= bucketMaxPos;pos+=interval){
-            bucket.setPosition(pos);
-        }
-        currentPos = bucketMaxPos;
-    }
-
-    public void closeBucket(){
-        for(double pos=currentPos;pos >= bucketMinPos;pos-=interval){
-            bucket.setPosition(pos);
-        }
-        currentPos = bucketMinPos;
-    }
-
-    public void startSpinning(){
-        grabber.setPower(spinningPower);
-        isSpinning = true;
-    }
-
-    public void stopSpinning(){
-        isSpinning = false;
-        grabber.setPower(0);
-    }
-
-    public void moveMotor(boolean buttonPressed, Mechanisms.MotorConstants motorData){
-        DcMotor motor = motorData.motor;
-        int maxPos = motorData.max;
-        int minPos = motorData.min;
-        double power = motorData.power;
-        boolean extended = motorData.extended;
-
-        if (buttonPressed){
-            if(extended) {
-                this.drop(motor,minPos,power);
-            }else{
-                this.lift(motor,maxPos,power);
+    public void checkBusy(){
+        ArrayList<DcMotor> toRemove = new ArrayList<>();
+        for(DcMotor motor:busyMotors){
+            if (!motor.isBusy()){
+                motor.setPower(0);
+                motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                toRemove.add(motor);
             }
-            extended = !extended;
         }
-
-        if (!this.isLifting(motor)){
-            this.stopLift(motor);
-        }
-
-        motorData.extended = extended;
-
-    }
-
-    enum MotorConstants{
-        LIFT(Mechanisms.liftArmMotor,Mechanisms.liftMaxPosition,Mechanisms.liftMinPosition,Mechanisms.liftPower,Mechanisms.liftExtended),
-        GRAB(Mechanisms.grabberArmMotor,Mechanisms.grabberMaxPosition,Mechanisms.grabberMinPosition,Mechanisms.grabberPower,Mechanisms.grabberExtended),
-        TURN(Mechanisms.turnMotor,Mechanisms.turnMotorMax,Mechanisms.turnMotorMin,Mechanisms.turnPower,Mechanisms.turnExtended);
-
-        public DcMotor motor;
-        public int max;
-        public int min;
-        public double power;
-        public boolean extended;
-        MotorConstants(DcMotor motor, int max, int min,double power,boolean extended){
-            this.motor = motor;
-            this.max = max;
-            this.min = min;
-            this.power = power;
-            this.extended = extended;
+        for(DcMotor motor:toRemove){
+            busyMotors.remove(motor);
         }
     }
 
+   
 
 
 }

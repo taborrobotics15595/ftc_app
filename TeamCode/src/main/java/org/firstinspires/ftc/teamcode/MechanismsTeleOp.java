@@ -3,75 +3,54 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 @TeleOp
 public class MechanismsTeleOp extends LinearOpMode {
     Mechanisms mechs;
+    ElapsedTime runtime;
+
+    private double maxPower = 0.3;
+
+    double powerY,powerX,turn,lift,swing;
+
 
     @Override
-    public void runOpMode(){
-        mechs = new Mechanisms(hardwareMap,"LiftMotor","GrabberMotor","TurnMotor","BucketServo","GrabberServo");
+    public void runOpMode() {
+        runtime = new ElapsedTime();
+
+        mechs = new Mechanisms(hardwareMap,"Lift_Motor","Extend_Motor","Drop_Motor","Swing_Motor","Flip_Servo");
 
         waitForStart();
 
-        while(opModeIsActive()){
-            moveMotor(gamepad1.a,Mechanisms.MotorConstants.LIFT);
-            moveMotor(gamepad1.x,Mechanisms.MotorConstants.GRAB);
-            moveMotor(gamepad1.y,Mechanisms.MotorConstants.TURN);
+        while (opModeIsActive()) {
+            lift = Range.clip(gamepad2.left_stick_y,-mechs.liftPower,mechs.liftPower);
+            swing = Range.clip(gamepad2.right_stick_y,-mechs.swingPower,mechs.swingPower);
 
+            mechs.setPower(mechs.liftMotor,lift);
+            mechs.setPower(mechs.swingArmMotor,swing);
 
-            if(gamepad1.b){
-                if(mechs.bucketOpened){
-                    mechs.openBucket();
-                }
-                else{
-                    mechs.closeBucket();
-                }
-                mechs.bucketOpened = !mechs.bucketOpened;
+            if (gamepad2.b){
+                int pos = (mechs.extendExtended)?mechs.extendMin:mechs.extendMax;
+                mechs.toggleMotor(mechs.extendArmMotor,pos,mechs.extendPower);
+                mechs.extendExtended = !mechs.extendExtended;
+            }
+            if (gamepad2.y){
+                double power = (mechs.dropSpinning)?0:mechs.dropPower;
+                mechs.setPower(mechs.dropMineralMotor,power);
+                mechs.dropSpinning = !mechs.dropSpinning;
+            }
+            if (gamepad2.x){
+                mechs.flipBucket();
             }
 
-            if(gamepad1.right_bumper){
-                if(mechs.isSpinning){
-                    mechs.stopSpinning();
-                }
-                else{
-                    mechs.startSpinning();
-                }
-            }
+            mechs.checkBusy();
 
+            String message = Double.toString(runtime.seconds());
+
+            telemetry.addData("Time:", message);
+            telemetry.update();
         }
     }
-
-    private void moveMotor(boolean buttonPressed, Mechanisms.MotorConstants motorData){
-        DcMotor motor = motorData.motor;
-        int maxPos = motorData.max;
-        int minPos = motorData.min;
-        double power = motorData.power;
-        boolean extended = motorData.extended;
-
-        if (buttonPressed){
-            if(extended) {
-                mechs.drop(motor,minPos,power);
-            }else{
-                mechs.lift(motor,maxPos,power);
-            }
-            extended = !extended;
-        }
-
-        if (!mechs.isLifting(motor)){
-            mechs.stopLift(motor);
-        }
-
-        motorData.extended = extended;
-
-    }
-
-
-
-
 }
-
-
-
-
