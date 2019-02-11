@@ -48,10 +48,10 @@ public class GetPosition extends LinearOpMode {
                     } else if (message != "unknown") {
                         found = true;
                     }
-                    telemetry.addData("Data:", " Size:" + r.size() + " Position: " + message + " RObot: " + positionNames[position]);
+                    telemetry.addData("Data:", " Size:" + r.size() + " Position: " + message + " Robot: " + positionNames[position]);
                 }else{
                     finder.stop();
-                    telemetry.addData("Data:","Mineral position: " + message + " RObot:" + positionNames[position]);
+                    telemetry.addData("Data:","Mineral position: " + message + " Robot:" + positionNames[position]);
 
                 }
 

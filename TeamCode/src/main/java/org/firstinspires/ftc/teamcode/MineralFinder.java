@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MineralFinder {
@@ -50,7 +51,13 @@ public class MineralFinder {
 
     public List<Recognition> getRecognitions(){
         List<Recognition> recognitions = tfod.getRecognitions();
-        return recognitions;
+        ArrayList<Recognition> good = new ArrayList<>();
+        for(Recognition r:recognitions){
+            if (r.getConfidence() > 0.5){
+                good.add(r);
+            }
+        }
+        return good;
     }
 
 
@@ -111,7 +118,7 @@ public class MineralFinder {
                 else if (g>s){
                     message = "middle";
                 }
-                else if (s>900){
+                else if (s>1200){
                     message = "middle";
                 }
                 else{

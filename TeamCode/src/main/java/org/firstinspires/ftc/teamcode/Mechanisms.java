@@ -11,19 +11,20 @@ public class Mechanisms {
     Servo flipBucket;
 
     double flipMax = 1;
-    double flipMin = 0;
+    double flipMin = 0.3;
     double flipCurrent = 0;
 
-    double liftPower = 1;
+    double liftPower = 0.5;
+    int liftMax = -5300;
 
-    int extendMax = -3000;
+    int extendMax = 11000;
     int extendMin = 0;
     double extendPower = 1;
     boolean extendExtended = false;
 
     double swingPower = 0.5;
 
-    double dropPower = -0.5;
+    double dropPower = -0.6;
     boolean dropSpinning = false;
 
     ArrayList<DcMotor> busyMotors = new ArrayList<>();
@@ -65,6 +66,7 @@ public class Mechanisms {
         motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motor.setPower(power);
         busyMotors.add(motor);
+
     }
 
     public void checkBusy(){

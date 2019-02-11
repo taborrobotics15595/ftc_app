@@ -85,19 +85,22 @@ public class DriveTrain {
     public void goToPositions(int[] target,double power){
         for(int i = 0;i<motors.size();i++){
             motors.get(i).setTargetPosition(target[i]);
+            motors.get(i).setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
-        this.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
 
         int busy = 4;
         while (busy > 0){
+            busy = 4;
             for(DcMotor motor:motors){
                 if (motor.isBusy()){
                     motor.setPower(power);
                 }
                 else{
                     motor.setPower(0);
+                    motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    busy --;
+                    busy -= 1;
                 }
             }
         }

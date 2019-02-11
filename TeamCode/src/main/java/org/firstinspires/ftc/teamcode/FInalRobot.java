@@ -14,9 +14,13 @@ public class FInalRobot extends LinearOpMode {
     Mechanisms mechs;
     ElapsedTime runtime;
 
-    private double maxPower = 0.3;
+    private double maxPower = 0.4;
+    private double autoPower = 0.2;
 
     double powerY,powerX,turn,lift,swing;
+
+    int[] currentPositions = new int[4];
+    int[] targetPositions = new int[4];
 
 
     @Override
@@ -46,11 +50,17 @@ public class FInalRobot extends LinearOpMode {
             if (gamepad2.b){
                 int pos = (mechs.extendExtended)?mechs.extendMin:mechs.extendMax;
                 mechs.toggleMotor(mechs.extendArmMotor,pos,mechs.extendPower);
+                mechs.extendExtended = !mechs.extendExtended;
             }
-            if (gamepad2.y){
-                double power = (mechs.dropSpinning)?0:mechs.dropPower;
+            if (gamepad2.right_trigger > 0){
+                double power = mechs.dropPower;
                 mechs.setPower(mechs.dropMineralMotor,power);
                 mechs.dropSpinning = !mechs.dropSpinning;
+            }
+
+            else{
+                double power = 0;
+                mechs.setPower(mechs.dropMineralMotor,power);
             }
             if (gamepad2.x){
                 mechs.flipBucket();
@@ -58,10 +68,23 @@ public class FInalRobot extends LinearOpMode {
 
             mechs.checkBusy();
 
-            String message = Double.toString(runtime.seconds());
+            currentPositions = robot.getCurrentPositions();
+            targetPositions = (gamepad1.a)?currentPositions:targetPositions;
 
-            telemetry.addData("Time:", message);
+
+
+            String message = formatString(" Position: ",currentPositions) + formatString(" Target: ",targetPositions);
+            message += " Arm: " + mechs.liftMotor.getCurrentPosition() + " Extend: " + mechs.swingArmMotor.getCurrentPosition();
+            telemetry.addData("Status:", message);
             telemetry.update();
         }
+    }
+
+    private String formatString(String pre,int[] positions){
+        String m = "";
+        for(int p:positions){
+            m += pre + p;
+        }
+        return m;
     }
 }
