@@ -30,7 +30,7 @@ public class WiffleLauncher {
 
 
     public void setup(){
-        m3.setTargetPosition(96);
+        m3.setTargetPosition(-96);
         m3.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         while(m3.isBusy()){
             m3.setPower(0.5);

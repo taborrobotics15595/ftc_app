@@ -12,7 +12,7 @@ import java.util.ArrayList;
 @TeleOp
 public class ExhibitionRobot extends LinearOpMode {
 
-    HolonomicDriveTrain robot;
+    //HolonomicDriveTrain robot;
 
     double maxPower = 1;
 
@@ -34,12 +34,12 @@ public class ExhibitionRobot extends LinearOpMode {
 
     @Override
     public void runOpMode(){
-        driver = hardwareMap.get(RevBlinkinLedDriver.class,"Driver");
+        //driver = hardwareMap.get(RevBlinkinLedDriver.class,"Driver");
 
-        robot = new HolonomicDriveTrain(hardwareMap,"Motor1","Motor2","Motor3","Motor4");
+        //robot = new HolonomicDriveTrain(hardwareMap,"Motor1","Motor2","Motor3","Motor4");
         launcher = new WiffleLauncher(hardwareMap,"Launch1","Launch2","Spinner");
 
-        robot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //robot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //robot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //robot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -52,7 +52,7 @@ public class ExhibitionRobot extends LinearOpMode {
 
             double rotate = -Range.clip(gamepad1.right_stick_x,-maxPower,maxPower);
 
-            robot.setPower(maxPower,yPower,xPower,rotate);
+            //robot.setPower(maxPower,yPower,xPower,rotate);
 
 
             if (gamepad1.left_trigger > 0){
@@ -60,7 +60,7 @@ public class ExhibitionRobot extends LinearOpMode {
                 increasing = true;
                 moving = true;
 
-                driver.setPattern(RevBlinkinLedDriver.BlinkinPattern.BEATS_PER_MINUTE_LAVA_PALETTE);
+                //driver.setPattern(RevBlinkinLedDriver.BlinkinPattern.BEATS_PER_MINUTE_LAVA_PALETTE);
 
             }
             else{
@@ -68,7 +68,7 @@ public class ExhibitionRobot extends LinearOpMode {
                 increasing = false;
                 moving = false;
 
-                driver.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIGHT_CHASE_BLUE);
+                //'driver.setPattern(RevBlinkinLedDriver.BlinkinPattern.LIGHT_CHASE_BLUE);
 
             }
 

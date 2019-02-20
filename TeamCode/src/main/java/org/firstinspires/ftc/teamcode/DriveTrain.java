@@ -85,6 +85,7 @@ public class DriveTrain {
     public void goToPositions(int[] target,double power){
         for(int i = 0;i<motors.size();i++){
             motors.get(i).setTargetPosition(target[i]);
+            motors.get(i).setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motors.get(i).setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
@@ -99,7 +100,7 @@ public class DriveTrain {
                 else{
                     motor.setPower(0);
                     motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     busy -= 1;
                 }
             }
