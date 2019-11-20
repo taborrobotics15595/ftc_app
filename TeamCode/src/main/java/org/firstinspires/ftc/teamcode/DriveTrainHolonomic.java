@@ -13,7 +13,7 @@ public class DriveTrainHolonomic extends LinearOpMode {
     ElapsedTime runtime;
     RevBlinkinLedDriver driver;
 
-    private double maxPower = 0.5;
+    private double maxPower = 0.3;
 
     int[] target1 = {500,-500,500,-500};
     int[] target2 = {500,500,-500,-500};
@@ -40,11 +40,11 @@ public class DriveTrainHolonomic extends LinearOpMode {
             turn = Range.clip(gamepad1.right_stick_x, -maxPower, maxPower);
 
             if ((powerX + powerY + turn) != 0){
-                driver.setPattern(RevBlinkinLedDriver.BlinkinPattern.TWINKLES_PARTY_PALETTE);
+                driver.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_LAVA_PALETTE);
 
             }
             else{
-                driver.setPattern(RevBlinkinLedDriver.BlinkinPattern.STROBE_WHITE);
+                driver.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE);
             }
 
             robot.setPower(maxPower,powerY,powerX,turn);

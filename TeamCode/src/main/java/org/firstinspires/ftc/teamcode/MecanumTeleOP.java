@@ -25,17 +25,20 @@ public class MecanumTeleOP extends LinearOpMode {
         robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        arm = hardwareMap.get(DcMotor.class,"Arm_Motor");
+        //arm = hardwareMap.get(DcMotor.class,"Arm_Motor");
 
         runtime = new ElapsedTime();
 
         waitForStart();
 
         while (opModeIsActive()) {
-            powerY = -Range.clip(gamepad1.left_stick_y, -maxPower, maxPower);
+            powerY = Range.clip(gamepad1.left_stick_y, -maxPower, maxPower);
             powerX = Range.clip(gamepad1.left_stick_x, -maxPower, maxPower);
             turn = Range.clip(gamepad1.right_stick_x, -maxPower, maxPower);
 
+            robot.setPower(maxPower,powerY,powerX,turn);
+
+            /*
             if (gamepad1.a){
                 arm.setPower(1);
             }
@@ -49,8 +52,8 @@ public class MecanumTeleOP extends LinearOpMode {
             else{
                 arm.setPower(0);
             }
+*/
 
-            robot.setPower(maxPower,powerY,powerX,turn);
 
         }
     }
