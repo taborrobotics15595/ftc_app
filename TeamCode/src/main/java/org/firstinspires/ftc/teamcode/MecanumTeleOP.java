@@ -3,16 +3,17 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 @TeleOp
 public class MecanumTeleOP extends LinearOpMode {
     MecanumDriveTrain robot;
-    DcMotor arm;
+    Servo servo;
     ElapsedTime runtime;
 
-    private double maxPower = 0.75;
+    private double maxPower = 1,minPosition = 0,maxPosition = 0.7,position = minPosition;
 
 
     double powerY,powerX,turn;
@@ -21,11 +22,11 @@ public class MecanumTeleOP extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot = new MecanumDriveTrain(hardwareMap,"Motor1", "Motor2", "Motor3", "Motor4");
-        robot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //robot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        //arm = hardwareMap.get(DcMotor.class,"Arm_Motor");
+        servo = hardwareMap.get(Servo.class,"Servo");
 
         runtime = new ElapsedTime();
 
@@ -38,21 +39,17 @@ public class MecanumTeleOP extends LinearOpMode {
 
             robot.setPower(maxPower,powerY,powerX,turn);
 
-            /*
             if (gamepad1.a){
-                arm.setPower(1);
-            }
-            else{
-                arm.setPower(0);
+                servo.setPosition(position);
+                position = (position == maxPosition)?minPosition:maxPosition;
+                try{
+                    Thread.sleep(400);
+                }catch(InterruptedException e){
+
+                }
             }
 
-            if (gamepad1.b){
-                arm.setPower(-1);
-            }
-            else{
-                arm.setPower(0);
-            }
-*/
+
 
 
         }
